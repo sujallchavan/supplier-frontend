@@ -43,7 +43,7 @@
 
     <script>
       function fetchCustomers() {
-        fetch("https://backend-api-l0y1.onrender.com/api/customer/supplier") // ✅ Correct Backend URL
+        fetch("https://backend-api-l0y1.onrender.com/api/customer/all") // ✅ Correct Backend URL
           .then((response) => {
             if (!response.ok) {
               throw new Error("Network response was not ok");
