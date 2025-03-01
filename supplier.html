@@ -34,6 +34,7 @@
         <tr>
           <th>Name</th>
           <th>Email</th>
+          <th>phone_number</th>
         </tr>
       </thead>
       <tbody id="customerBody">
@@ -64,6 +65,7 @@
               const row = `<tr>
                             <td>${customer.name}</td>
                             <td>${customer.email}</td>
+                            <td>${customer.phone_number}</td>
                           </tr>`;
               tableBody.innerHTML += row;
             });
