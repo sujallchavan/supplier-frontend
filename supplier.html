@@ -29,7 +29,7 @@
   <body>
     <h2>Customer List (Fetched by Supplier)</h2>
     <button onclick="fetchCustomers()">Fetch Customers</button>
-    <table id="customerTable">
+    <table id="customerBody">
       <thead>
         <tr>
           <th>Name</th>
@@ -44,7 +44,7 @@
 
     <script>
       function fetchCustomers() {
-        fetch("https://backend-api-l0y1.onrender.com/api/customer/all") // ✅ Correct Backend URL
+        fetch("https://backend-api-w0bg.onrender.com/api/customer/all")
           .then((response) => {
             if (!response.ok) {
               throw new Error("Network response was not ok");
@@ -55,23 +55,23 @@
             const tableBody = document.getElementById("customerBody");
             tableBody.innerHTML = ""; // Clear previous data
 
-            if (data.length === 0) {
+            if (!data || data.length === 0) {
               tableBody.innerHTML =
-                "<tr><td colspan='2'>No customers found</td></tr>";
+                "<tr><td colspan='3'>No customers found</td></tr>";
               return;
             }
 
             data.forEach((customer) => {
               const row = `<tr>
-                            <td>${customer.name}</td>
-                            <td>${customer.email}</td>
-                            <td>${customer.phone_number}</td>
-                          </tr>`;
+                      <td>${customer.name}</td>
+                      <td>${customer.email}</td>
+                      <td>${customer.phone_number}</td>
+                    </tr>`;
               tableBody.innerHTML += row;
             });
           })
           .catch((error) => {
-            console.error("Error fetching data:", error);
+            console.error("Error fetching customer data:", error);
             alert("Failed to fetch customer data. Please check the backend.");
           });
       }
