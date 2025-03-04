@@ -44,7 +44,7 @@
 
     <script>
       function fetchCustomers() {
-        fetch("https://backend-api-w0bg.onrender.com/api/customer/all")
+        fetch("http://localhost:5000/api/customer/all")
           .then((response) => {
             if (!response.ok) {
               throw new Error("Network response was not ok");
@@ -66,6 +66,10 @@
                       <td>${customer.name}</td>
                       <td>${customer.email}</td>
                       <td>${customer.phone_number}</td>
+                      <td>${customer.location}</td>
+                      <td>${customer.password}</td>
+                      <td>${customer.customer_id}</td>
+
                     </tr>`;
               tableBody.innerHTML += row;
             });
