@@ -4,55 +4,76 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Supplier Login</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/argon-dashboard@2.0.4/assets/css/argon-dashboard.css"
+    />
     <style>
       body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        margin-top: 100px;
+        background: linear-gradient(to bottom, #e38d3c, #df7226);
       }
-      input {
-        display: block;
-        margin: 10px auto;
-        padding: 10px;
-        width: 250px;
+      .card {
+        border-radius: 15px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
       }
-      button {
-        padding: 10px 20px;
-        background: blue;
-        color: white;
+      .btn-primary {
+        background: linear-gradient(to right, #e38d3c, #df7226);
         border: none;
-        cursor: pointer;
       }
-      #message {
-        margin-top: 20px;
-        color: red;
+
+      .btn-primary:hover {
+        background: linear-gradient(to right, #df7226, #e38d3c);
+        filter: brightness(1.1);
       }
     </style>
   </head>
   <body>
-    <h2>Supplier Login</h2>
-    <form id="loginForm">
-      <input type="email" id="email" placeholder="Email" required />
-      <input
-        type="password"
-        id="password"
-        placeholder="Password"
-        autocomplete="current-password"
-        required
-      />
-      <button type="submit">Login</button>
-    </form>
-    <p id="message"></p>
-
+    <div
+      class="container d-flex align-items-center justify-content-center min-vh-100"
+    >
+      <div class="card p-4" style="width: 400px">
+        <div class="card-body text-center">
+          <h3 class="mb-3">Supplier Login</h3>
+          <form id="loginForm">
+            <div class="mb-3">
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                placeholder="Email Address"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                placeholder="Password"
+                required
+              />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+          </form>
+          <p id="message" class="mt-2 error-message"></p>
+        </div>
+      </div>
+    </div>
     <script>
       document
         .getElementById("loginForm")
         .addEventListener("submit", async (e) => {
           e.preventDefault();
-
           const email = document.getElementById("email").value;
           const password = document.getElementById("password").value;
-
           try {
             const response = await fetch(
               "http://localhost:5000/api/suppliers/login",
@@ -62,36 +83,23 @@
                 body: JSON.stringify({ email, password }),
               }
             );
-
-            const text = await response.text();
-            console.log("Raw Response:", text);
-
-            const result = JSON.parse(text);
-
+            const result = await response.json();
             if (response.ok) {
-              // ✅ Store supplier data in sessionStorage
               sessionStorage.setItem(
                 "supplier",
                 JSON.stringify(result.supplier)
               );
-              sessionStorage.setItem("token", result.token); // If API returns a token
-
+              sessionStorage.setItem("token", result.token);
               alert("Login successful!");
-              window.location.href = "supplier.html"; // Redirect after login
+              window.location.href = "supplier.html";
             } else {
               document.getElementById("message").textContent = result.message;
             }
           } catch (error) {
-            console.error("Login Error:", error);
             document.getElementById("message").textContent =
               "An error occurred!";
           }
         });
-
-      // ✅ Redirect to dashboard if already logged in
-      if (sessionStorage.getItem("supplier")) {
-        window.location.href = "supplier.html";
-      }
     </script>
   </body>
 </html>
