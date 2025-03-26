@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome</title>
+  </head>
+  <body>
+    <h2>Welcome, <span id="supplierName">Supplier</span></h2>
+    <p>Email: <span id="supplierEmail">Loading...</span></p>
+    <button id="logoutBtn">Logout</button>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const supplierEmail = sessionStorage.getItem("supplierEmail");
+        const supplierName = sessionStorage.getItem("supplierName");
+
+        if (!supplierEmail) {
+          alert("You must log in first!");
+          window.location.href = "login.html";
+          return;
+        }
+
+        document.getElementById("supplierName").textContent = supplierName;
+        document.getElementById("supplierEmail").textContent = supplierEmail;
+
+        document
+          .getElementById("logoutBtn")
+          .addEventListener("click", function () {
+            sessionStorage.removeItem("supplierEmail");
+            sessionStorage.removeItem("supplierName");
+
+            alert("Logged out successfully!");
+            window.location.href = "login.html";
+          });
+      });
+    </script>
+  </body>
+</html>

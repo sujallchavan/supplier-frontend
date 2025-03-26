@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Supplier Signup</title>
+    <link rel="stylesheet" href="http://localhost:5000/styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h2>Supplier Signup</h2>
+      <form id="signupForm">
+        <input type="text" id="name" placeholder="Name" required />
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <input type="text" id="category" placeholder="Category" required />
+        <button type="submit">Sign Up</button>
+      </form>
+      <p id="message"></p>
+      <p class="mt-3">
+        Already have an account? <a href="login.html">Sign In</a>
+      </p>
+    </div>
+
+    <script>
+      document
+        .getElementById("signupForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const name = document.getElementById("name").value;
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+          const category = document.getElementById("category").value;
+
+          try {
+            const response = await fetch(
+              "http://localhost:5000/api/suppliers/signup",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, password, category }),
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error("Signup failed");
+            }
+
+            const result = await response.json();
+            document.getElementById("message").textContent = result.message;
+
+            // ✅ Redirect to login page
+          } catch (error) {
+            console.error("Signup Error:", error);
+            document.getElementById("message").textContent =
+              "Signup failed. Please try again.";
+          }
+        });
+    </script>
+  </body>
+</html>

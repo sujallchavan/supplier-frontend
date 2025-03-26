@@ -3,82 +3,54 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Supplier - Fetch Customers</title>
+    <title>Supplier Dashboard</title>
     <style>
       body {
         font-family: Arial, sans-serif;
         text-align: center;
-        margin: 50px;
+        margin-top: 100px;
       }
-      table {
-        width: 80%;
-        margin: 20px auto;
-        border-collapse: collapse;
+      #supplierInfo {
+        font-size: 20px;
+        margin-top: 20px;
       }
-      th,
-      td {
-        border: 1px solid black;
-        padding: 10px;
-        text-align: left;
-      }
-      th {
-        background-color: #f4f4f4;
+      button {
+        padding: 10px 20px;
+        background: red;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-top: 20px;
       }
     </style>
   </head>
   <body>
-    <h2>Customer List (Fetched by Supplier)</h2>
-    <button onclick="fetchCustomers()">Fetch Customers</button>
-    <table id="customerBody">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>phone_number</th>
-        </tr>
-      </thead>
-      <tbody id="customerBody">
-        <!-- Customer data will be inserted here -->
-      </tbody>
-    </table>
+    <h2>Welcome Supplier</h2>
+    <div id="supplierInfo">Loading...</div>
+
+    <!-- Logout Button -->
+    <button id="logout">Logout</button>
 
     <script>
-      function fetchCustomers() {
-        fetch("https://backend-api-dtwc.onrender.com/api/customer/all")
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error("Network response was not ok");
-            }
-            return response.json();
-          })
-          .then((data) => {
-            const tableBody = document.getElementById("customerBody");
-            tableBody.innerHTML = ""; // Clear previous data
+      // ✅ Get supplier details from sessionStorage
+      const supplierData = sessionStorage.getItem("supplier");
 
-            if (!data || data.length === 0) {
-              tableBody.innerHTML =
-                "<tr><td colspan='3'>No customers found</td></tr>";
-              return;
-            }
-
-            data.forEach((customer) => {
-              const row = `<tr>
-                      <td>${customer.name}</td>
-                      <td>${customer.email}</td>
-                      <td>${customer.phone_number}</td>
-                      <td>${customer.location}</td>
-                      <td>${customer.password}</td>
-                      <td>${customer.customer_id}</td>
-
-                    </tr>`;
-              tableBody.innerHTML += row;
-            });
-          })
-          .catch((error) => {
-            console.error("Error fetching customer data:", error);
-            alert("Failed to fetch customer data. Please check the backend.");
-          });
+      if (supplierData) {
+        const supplier = JSON.parse(supplierData);
+        document.getElementById("supplierInfo").innerHTML = `
+          <p><strong>Name:</strong> ${supplier.name}</p>
+          <p><strong>Email:</strong> ${supplier.email}</p>
+          <p><strong>Category:</strong> ${supplier.category || "N/A"}</p>
+        `;
+      } else {
+        document.getElementById("supplierInfo").textContent = "Not logged in!";
       }
+
+      // ✅ Logout Functionality
+      document.getElementById("logout").addEventListener("click", () => {
+        sessionStorage.clear(); // Remove session data
+        window.location.href = "login.html"; // Redirect to login page
+      });
     </script>
   </body>
 </html>
