@@ -38,9 +38,14 @@
       if (supplierData) {
         const supplier = JSON.parse(supplierData);
         document.getElementById("supplierInfo").innerHTML = `
+           <p><strong>Supplier ID:</strong> ${supplier.supplierId}</p>
           <p><strong>Name:</strong> ${supplier.name}</p>
+
           <p><strong>Email:</strong> ${supplier.email}</p>
+          <p><strong>Phone:</strong> ${supplier.phoneNumber || "N/A"}</p>
+          <p><strong>Company:</strong> ${supplier.companyName || "N/A"}</p>
           <p><strong>Category:</strong> ${supplier.category || "N/A"}</p>
+          <p><strong>Address:</strong> ${supplier.location || "N/A"}</p>
         `;
       } else {
         document.getElementById("supplierInfo").textContent = "Not logged in!";
