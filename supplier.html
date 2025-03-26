@@ -8,11 +8,23 @@
       body {
         font-family: Arial, sans-serif;
         text-align: center;
-        margin-top: 100px;
+        margin-top: 50px;
       }
       #supplierInfo {
         font-size: 20px;
         margin-top: 20px;
+      }
+      #orders {
+        margin-top: 30px;
+        text-align: left;
+        display: inline-block;
+      }
+      .order-card {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin: 10px;
+        border-radius: 5px;
+        background: #f9f9f9;
       }
       button {
         padding: 10px 20px;
@@ -28,6 +40,9 @@
     <h2>Welcome Supplier</h2>
     <div id="supplierInfo">Loading...</div>
 
+    <h3>Customer Orders</h3>
+    <div id="orders">Fetching orders...</div>
+
     <!-- Logout Button -->
     <button id="logout">Logout</button>
 
@@ -38,17 +53,57 @@
       if (supplierData) {
         const supplier = JSON.parse(supplierData);
         document.getElementById("supplierInfo").innerHTML = `
-           <p><strong>Supplier ID:</strong> ${supplier.supplierId}</p>
+          <p><strong>Supplier ID:</strong> ${supplier.supplierId}</p>
           <p><strong>Name:</strong> ${supplier.name}</p>
-
           <p><strong>Email:</strong> ${supplier.email}</p>
           <p><strong>Phone:</strong> ${supplier.phoneNumber || "N/A"}</p>
           <p><strong>Company:</strong> ${supplier.companyName || "N/A"}</p>
           <p><strong>Category:</strong> ${supplier.category || "N/A"}</p>
           <p><strong>Address:</strong> ${supplier.location || "N/A"}</p>
         `;
+
+        // ✅ Fetch orders based on category
+        fetchOrders(supplier.category);
       } else {
         document.getElementById("supplierInfo").textContent = "Not logged in!";
+      }
+
+      // ✅ Function to fetch orders based on category
+      function fetchOrders(category) {
+        fetch(`http://localhost:5000/api/suppliers/orders?category=${category}`)
+          .then((response) => response.json())
+          .then((orders) => {
+            const ordersContainer = document.getElementById("orders");
+            ordersContainer.innerHTML = "";
+
+            if (orders.length === 0) {
+              ordersContainer.innerHTML =
+                "<p>No orders found for your category.</p>";
+              return;
+            }
+
+            orders.forEach((order) => {
+              const orderCard = document.createElement("div");
+              orderCard.className = "order-card";
+              orderCard.innerHTML = `
+                <p><strong>Order ID:</strong> ${order.order_id}</p>
+                <p><strong>Customer:</strong> ${order.cname} (${order.email})</p>
+                <p><strong>Part:</strong> ${order.Part_Name}</p>
+                <p><strong>Category:</strong> ${order.category}</p>
+                <p><strong>Status:</strong> ${order.working_status}</p>
+                <p><strong>Description:</strong> ${order.desc}</p>
+                <p><strong>Quantity:</strong> ${order.tv}</p>
+                <p><strong>Price:</strong> ${order.pr}</p>
+                <p><strong>Approval Status:</strong> ${order.isApproved}</p>
+              `;
+              ordersContainer.appendChild(orderCard);
+            });
+          })
+          .catch((error) => {
+            console.error("Error fetching orders:", error);
+            document.getElementById("orders").textContent =
+              "Failed to fetch orders.";
+          });
       }
 
       // ✅ Logout Functionality
