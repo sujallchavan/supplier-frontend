@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Supplier Dashboard</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </head>
+  <body>
+    <div class="container mt-4">
+      <h3>📢 New Order Notifications</h3>
+
+      <!-- Order Notification Cards -->
+      <div class="row">
+        <!-- Hardware Order -->
+        <div class="col-md-4">
+          <div class="card border-primary mb-3">
+            <div class="card-header bg-primary text-white">Hardware Order</div>
+            <div class="card-body">
+              <h5 class="card-title">Order #101</h5>
+              <p class="card-text">Customer: John Doe</p>
+              <button
+                class="btn btn-primary btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#orderDetailsModal"
+                onclick="showOrderDetails('Hardware', '101', 'John Doe', 'Nuts & Bolts - 50 pcs', '$100')"
+              >
+                View
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Electrical Order -->
+        <div class="col-md-4">
+          <div class="card border-warning mb-3">
+            <div class="card-header bg-warning text-dark">Electrical Order</div>
+            <div class="card-body">
+              <h5 class="card-title">Order #102</h5>
+              <p class="card-text">Customer: Alice Smith</p>
+              <button
+                class="btn btn-primary btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#orderDetailsModal"
+                onclick="showOrderDetails('Electrical', '102', 'Alice Smith', 'Wiring Cables - 200m', '$250')"
+              >
+                View
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mechanical Order -->
+        <div class="col-md-4">
+          <div class="card border-danger mb-3">
+            <div class="card-header bg-danger text-white">Mechanical Order</div>
+            <div class="card-body">
+              <h5 class="card-title">Order #103</h5>
+              <p class="card-text">Customer: Mark Wilson</p>
+              <button
+                class="btn btn-primary btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#orderDetailsModal"
+                onclick="showOrderDetails('Mechanical', '103', 'Mark Wilson', 'Bearings - 10 sets', '$180')"
+              >
+                View
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div class="modal fade" id="orderDetailsModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Order Details</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p><strong>Category:</strong> <span id="orderCategory"></span></p>
+            <p><strong>Order ID:</strong> <span id="orderId"></span></p>
+            <p><strong>Customer:</strong> <span id="customerName"></span></p>
+            <p><strong>Items:</strong> <span id="orderItems"></span></p>
+            <p><strong>Total Amount:</strong> <span id="orderAmount"></span></p>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-success" onclick="acceptOrder()">
+              Accept
+            </button>
+            <button class="btn btn-danger" onclick="rejectOrder()">
+              Reject
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function showOrderDetails(category, id, customer, items, amount) {
+        document.getElementById("orderCategory").innerText = category;
+        document.getElementById("orderId").innerText = id;
+        document.getElementById("customerName").innerText = customer;
+        document.getElementById("orderItems").innerText = items;
+        document.getElementById("orderAmount").innerText = amount;
+      }
+
+      function acceptOrder() {
+        alert("Order Accepted ✅");
+      }
+
+      function rejectOrder() {
+        alert("Order Rejected ❌");
+      }
+    </script>
+  </body>
+</html>
