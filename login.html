@@ -76,7 +76,7 @@
           const password = document.getElementById("password").value;
           try {
             const response = await fetch(
-              "http://localhost:5000/api/suppliers/login",
+              "https://backend-api-k9ts.onrender.com/api/suppliers/login",
               {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
