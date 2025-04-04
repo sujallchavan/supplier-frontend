@@ -228,6 +228,17 @@
         border-color: #c52717;
       }
 
+      .btn-primary {
+        color: white;
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+      }
+
+      .btn-primary:hover {
+        background-color: #3a56c8;
+        border-color: #2e4bbf;
+      }
+
       .btn-logout {
         color: white;
         background-color: var(--danger-color);
@@ -452,6 +463,39 @@
         color: var(--text-color);
         font-style: italic;
       }
+
+      /* Status Badges */
+      .badge {
+        display: inline-block;
+        padding: 0.35em 0.65em;
+        font-size: 0.75em;
+        font-weight: 700;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 0.25rem;
+      }
+
+      .badge-primary {
+        color: #fff;
+        background-color: var(--primary-color);
+      }
+
+      .badge-success {
+        color: #fff;
+        background-color: var(--success-color);
+      }
+
+      .badge-danger {
+        color: #fff;
+        background-color: var(--danger-color);
+      }
+
+      .badge-warning {
+        color: #1f2d3d;
+        background-color: var(--warning-color);
+      }
     </style>
   </head>
   <body>
@@ -483,6 +527,12 @@
           <a href="#" class="nav-link">
             <i class="fas fa-fw fa-times-circle"></i>
             <span>Rejected Orders</span>
+          </a>
+        </div>
+        <div class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="fas fa-fw fa-user-check"></i>
+            <span>Assigned Orders</span>
           </a>
         </div>
         <div class="nav-item">
@@ -540,6 +590,20 @@
             <div class="table-responsive">
               <div id="orders">
                 <p>Fetching orders...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Assigned Orders -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h2>Orders Assigned to You</h2>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <div id="assignedOrders">
+                <p>Fetching assigned orders...</p>
               </div>
             </div>
           </div>
@@ -750,6 +814,7 @@
             if (pendingOrders.length === 0) {
               ordersContainer.innerHTML =
                 '<div class="no-data">No pending orders available.</div>';
+              fetchAssignedOrders(supplier, orders);
               fetchAcceptedOrders(supplier, approvedOrders);
               fetchRejectedOrders(supplier, approvedOrders);
               return;
@@ -784,14 +849,32 @@
                     <td>${order.cname} (${order.email})</td>
                     <td>${order.Part_Name}</td>
                     <td>${order.category}</td>
-                    <td>${order.working_status}</td>
+                    <td><span class="badge ${
+                      order.working_status === "Completed"
+                        ? "badge-success"
+                        : order.working_status === "Working"
+                        ? "badge-primary"
+                        : "badge-warning"
+                    }">${order.working_status}</span></td>
                     <td>${order.desc}</td>
                     <td>${order.tv}</td>
                     <td>${order.pr}</td>
-                    <td>${order.isApproved}</td>
+                    <td><span class="badge ${
+                      order.isApproved === "Approved"
+                        ? "badge-success"
+                        : "badge-danger"
+                    }">${order.isApproved}</span></td>
                     <td>
-                        <button class="btn btn-success" onclick="updateOrderStatus('${order.order_id}', '${supplier.supplierId}', 'Accepted')">Accept</button>
-                        <button class="btn btn-danger" onclick="updateOrderStatus('${order.order_id}', '${supplier.supplierId}', 'Rejected')">Reject</button>
+                        <button class="btn btn-success" onclick="updateOrderStatus('${
+                          order.order_id
+                        }', '${
+                supplier.supplierId
+              }', 'Accepted')">Accept</button>
+                        <button class="btn btn-danger" onclick="updateOrderStatus('${
+                          order.order_id
+                        }', '${
+                supplier.supplierId
+              }', 'Rejected')">Reject</button>
                     </td>
                 `;
               tbody.appendChild(row);
@@ -799,6 +882,7 @@
 
             table.appendChild(tbody);
             ordersContainer.appendChild(table);
+            fetchAssignedOrders(supplier, orders);
             fetchAcceptedOrders(supplier, approvedOrders);
             fetchRejectedOrders(supplier, approvedOrders);
           })
@@ -807,6 +891,80 @@
             document.getElementById("orders").innerHTML =
               '<div class="no-data">Failed to fetch orders. Please try again later.</div>';
           });
+      }
+
+      function fetchAssignedOrders(supplier, orders) {
+        const assignedOrders = orders.filter(
+          (order) =>
+            order.isSupplierAccepted &&
+            order.acceptedSupplier?.supplier_Id === supplier.supplierId
+        );
+
+        const assignedOrdersContainer =
+          document.getElementById("assignedOrders");
+        assignedOrdersContainer.innerHTML = "";
+
+        if (assignedOrders.length === 0) {
+          assignedOrdersContainer.innerHTML =
+            '<div class="no-data">No orders assigned to you yet.</div>';
+          return;
+        }
+
+        const table = document.createElement("table");
+        table.className = "table";
+        table.innerHTML = `
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Part</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Description</th>
+              <th>Quantity</th>
+              <th>Price</th>
+              <th>Assigned Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="assignedOrdersTableBody">
+          </tbody>
+        `;
+
+        const tbody = document.createElement("tbody");
+        assignedOrders.forEach((order) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${order.order_id}</td>
+            <td>${order.cname} (${order.email})</td>
+            <td>${order.Part_Name}</td>
+            <td>${order.category}</td>
+            <td><span class="badge ${
+              order.working_status === "Completed"
+                ? "badge-success"
+                : order.working_status === "Working"
+                ? "badge-primary"
+                : "badge-warning"
+            }">${order.working_status}</span></td>
+            <td>${order.desc}</td>
+            <td>${order.tv}</td>
+            <td>${order.pr}</td>
+            <td>${
+              order.acceptedSupplier?.acceptedAt
+                ? new Date(order.acceptedSupplier.acceptedAt).toLocaleString()
+                : "N/A"
+            }</td>
+            <td>
+              <button class="btn btn-primary" onclick="viewOrderDetails('${
+                order.order_id
+              }')">View</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+
+        table.appendChild(tbody);
+        assignedOrdersContainer.appendChild(table);
       }
 
       function fetchAcceptedOrders(supplier, orders) {
@@ -863,12 +1021,20 @@
             <td>${order.cname} (${order.email})</td>
             <td>${order.Part_Name}</td>
             <td>${order.category}</td>
-            <td>${order.working_status}</td>
+            <td><span class="badge ${
+              order.working_status === "Completed"
+                ? "badge-success"
+                : order.working_status === "Working"
+                ? "badge-primary"
+                : "badge-warning"
+            }">${order.working_status}</span></td>
             <td>${order.desc}</td>
             <td>${order.tv}</td>
             <td>${order.pr}</td>
             <td>${supplierResponse.supplier_Id}</td>
-            <td>${supplierResponse.status}</td>
+            <td><span class="badge badge-success">${
+              supplierResponse.status
+            }</span></td>
           `;
           tbody.appendChild(row);
         });
@@ -931,18 +1097,31 @@
             <td>${order.cname} (${order.email})</td>
             <td>${order.Part_Name}</td>
             <td>${order.category}</td>
-            <td>${order.working_status}</td>
+            <td><span class="badge ${
+              order.working_status === "Completed"
+                ? "badge-success"
+                : order.working_status === "Working"
+                ? "badge-primary"
+                : "badge-warning"
+            }">${order.working_status}</span></td>
             <td>${order.desc}</td>
             <td>${order.tv}</td>
             <td>${order.pr}</td>
             <td>${supplierResponse.supplier_Id}</td>
-            <td>${supplierResponse.status}</td>
+            <td><span class="badge badge-danger">${
+              supplierResponse.status
+            }</span></td>
           `;
           tbody.appendChild(row);
         });
 
         table.appendChild(tbody);
         rejectedOrdersContainer.appendChild(table);
+      }
+
+      function viewOrderDetails(orderId) {
+        alert(`Viewing details for order ${orderId}`);
+        // You can implement a modal or redirect to show detailed order information
       }
 
       async function updateOrderStatus(orderId, supplierId, status) {
