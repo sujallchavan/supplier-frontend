@@ -293,7 +293,7 @@
         background-color: white;
         border-radius: 0.5rem;
         width: 90%;
-        max-width: 500px;
+        max-width: 600px;
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
         overflow: hidden;
         animation: modalFadeIn 0.3s;
@@ -334,6 +334,8 @@
 
       .modal-body {
         padding: 1.5rem;
+        max-height: 70vh;
+        overflow-y: auto;
       }
 
       .modal-footer {
@@ -401,6 +403,29 @@
         font-size: 1rem;
       }
 
+      /* Order Details Modal Styles */
+      .order-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      .order-details .detail-group {
+        margin-bottom: 1rem;
+      }
+
+      .order-details .detail-group h4 {
+        margin-bottom: 0.5rem;
+        color: var(--primary-color);
+      }
+
+      .order-details .detail-group p {
+        margin: 0;
+        padding: 0.5rem;
+        background-color: #f8f9fc;
+        border-radius: 0.25rem;
+      }
+
       /* Responsive Styles */
       @media (max-width: 992px) {
         .sidebar {
@@ -437,6 +462,10 @@
         .modal-profile-img {
           margin-right: 0;
           margin-bottom: 1rem;
+        }
+
+        .order-details {
+          grid-template-columns: 1fr;
         }
       }
 
@@ -657,6 +686,22 @@
       </div>
     </div>
 
+    <!-- Order Details Modal -->
+    <div class="modal" id="orderModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Order Details</h3>
+          <button class="modal-close" id="orderModalClose">&times;</button>
+        </div>
+        <div class="modal-body" id="orderModalBody">
+          <!-- Dynamically filled by JavaScript -->
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" id="closeOrderModal">Close</button>
+        </div>
+      </div>
+    </div>
+
     <script>
       // Toggle sidebar on mobile
       document
@@ -670,6 +715,10 @@
       const userModal = document.getElementById("userModal");
       const modalClose = document.getElementById("modalClose");
       const modalLogout = document.getElementById("modalLogout");
+
+      const orderModal = document.getElementById("orderModal");
+      const orderModalClose = document.getElementById("orderModalClose");
+      const closeOrderModal = document.getElementById("closeOrderModal");
 
       // Open modal when clicking user info
       document
@@ -685,10 +734,29 @@
         document.body.style.overflow = "auto";
       });
 
+      // Close order modal when clicking close button
+      orderModalClose.addEventListener("click", function () {
+        orderModal.style.display = "none";
+        document.body.style.overflow = "auto";
+      });
+
+      closeOrderModal.addEventListener("click", function () {
+        orderModal.style.display = "none";
+        document.body.style.overflow = "auto";
+      });
+
       // Close modal when clicking outside
       userModal.addEventListener("click", function (e) {
         if (e.target === userModal) {
           userModal.style.display = "none";
+          document.body.style.overflow = "auto";
+        }
+      });
+
+      // Close order modal when clicking outside
+      orderModal.addEventListener("click", function (e) {
+        if (e.target === orderModal) {
+          orderModal.style.display = "none";
           document.body.style.overflow = "auto";
         }
       });
@@ -706,82 +774,82 @@
 
         // Update top user info
         document.getElementById("userInfoTop").innerHTML = `
-          <i class="fas fa-user-circle user-icon"></i>
-          <span>${supplier.name}</span>
-        `;
+              <i class="fas fa-user-circle user-icon"></i>
+              <span>${supplier.name}</span>
+            `;
 
         // Update modal content
         document.getElementById("modalBody").innerHTML = `
-          <div class="modal-profile">
-            <div class="modal-profile-img">
-              <i class="fas fa-user-tie"></i>
-            </div>
-            <div class="modal-profile-info">
-              <h4>${supplier.name}</h4>
-              <p>${supplier.companyName || "No Company"}</p>
-              <p>${supplier.category || "No Category"}</p>
-            </div>
-          </div>
-          <div class="modal-details">
-            <div class="modal-detail-item">
-              <h5>Supplier ID</h5>
-              <p>${supplier.supplierId}</p>
-            </div>
-            <div class="modal-detail-item">
-              <h5>Email</h5>
-              <p>${supplier.email}</p>
-            </div>
-            <div class="modal-detail-item">
-              <h5>Phone</h5>
-              <p>${supplier.phoneNumber || "N/A"}</p>
-            </div>
-            <div class="modal-detail-item">
-              <h5>Location</h5>
-              <p>${supplier.location || "N/A"}</p>
-            </div>
-          </div>
-        `;
+              <div class="modal-profile">
+                <div class="modal-profile-img">
+                  <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="modal-profile-info">
+                  <h4>${supplier.name}</h4>
+                  <p>${supplier.companyName || "No Company"}</p>
+                  <p>${supplier.category || "No Category"}</p>
+                </div>
+              </div>
+              <div class="modal-details">
+                <div class="modal-detail-item">
+                  <h5>Supplier ID</h5>
+                  <p>${supplier.supplierId}</p>
+                </div>
+                <div class="modal-detail-item">
+                  <h5>Email</h5>
+                  <p>${supplier.email}</p>
+                </div>
+                <div class="modal-detail-item">
+                  <h5>Phone</h5>
+                  <p>${supplier.phoneNumber || "N/A"}</p>
+                </div>
+                <div class="modal-detail-item">
+                  <h5>Location</h5>
+                  <p>${supplier.location || "N/A"}</p>
+                </div>
+              </div>
+            `;
 
         // Update supplier info cards
         document.getElementById("supplierInfo").innerHTML = `
-          <div class="info-item">
-            <h3>Supplier ID</h3>
-            <p>${supplier.supplierId}</p>
-          </div>
-          <div class="info-item">
-            <h3>Name</h3>
-            <p>${supplier.name}</p>
-          </div>
-          <div class="info-item">
-            <h3>Email</h3>
-            <p>${supplier.email}</p>
-          </div>
-          <div class="info-item">
-            <h3>Phone</h3>
-            <p>${supplier.phoneNumber || "N/A"}</p>
-          </div>
-          <div class="info-item">
-            <h3>Company</h3>
-            <p>${supplier.companyName || "N/A"}</p>
-          </div>
-          <div class="info-item">
-            <h3>Category</h3>
-            <p>${supplier.category || "N/A"}</p>
-          </div>
-          <div class="info-item">
-            <h3>Address</h3>
-            <p>${supplier.location || "N/A"}</p>
-          </div>
-        `;
+              <div class="info-item">
+                <h3>Supplier ID</h3>
+                <p>${supplier.supplierId}</p>
+              </div>
+              <div class="info-item">
+                <h3>Name</h3>
+                <p>${supplier.name}</p>
+              </div>
+              <div class="info-item">
+                <h3>Email</h3>
+                <p>${supplier.email}</p>
+              </div>
+              <div class="info-item">
+                <h3>Phone</h3>
+                <p>${supplier.phoneNumber || "N/A"}</p>
+              </div>
+              <div class="info-item">
+                <h3>Company</h3>
+                <p>${supplier.companyName || "N/A"}</p>
+              </div>
+              <div class="info-item">
+                <h3>Category</h3>
+                <p>${supplier.category || "N/A"}</p>
+              </div>
+              <div class="info-item">
+                <h3>Address</h3>
+                <p>${supplier.location || "N/A"}</p>
+              </div>
+            `;
 
         fetchOrders(supplier);
       } else {
         document.getElementById("supplierInfo").innerHTML = `
-          <div class="info-item" style="grid-column: 1 / -1;">
-            <h3>Error</h3>
-            <p>Not logged in!</p>
-          </div>
-        `;
+              <div class="info-item" style="grid-column: 1 / -1;">
+                <h3>Error</h3>
+                <p>Not logged in!</p>
+              </div>
+            `;
         window.location.href = "login.html";
       }
 
@@ -823,60 +891,60 @@
             const table = document.createElement("table");
             table.className = "table";
             table.innerHTML = `
-                <thead>
-                  <tr>
-                      <th>Order ID</th>
-                      <th>Customer</th>
-                      <th>Part</th>
-                      <th>Category</th>
-                      <th>Status</th>
-                      <th>Description</th>
-                      <th>Quantity</th>
-                      <th>Price</th>
-                      <th>Approval Status</th>
-                      <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody id="ordersTableBody">
-                </tbody>
-            `;
+                    <thead>
+                      <tr>
+                          <th>Order ID</th>
+                          <th>Customer</th>
+                          <th>Part</th>
+                          <th>Category</th>
+                          <th>Status</th>
+                          <th>Description</th>
+                          <th>Quantity</th>
+                          <th>Price</th>
+                          <th>Approval Status</th>
+                          <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                    </tbody>
+                `;
 
             const tbody = document.createElement("tbody");
             pendingOrders.forEach((order) => {
               const row = document.createElement("tr");
               row.innerHTML = `
-                    <td>${order.order_id}</td>
-                    <td>${order.cname} (${order.email})</td>
-                    <td>${order.Part_Name}</td>
-                    <td>${order.category}</td>
-                    <td><span class="badge ${
-                      order.working_status === "Completed"
-                        ? "badge-success"
-                        : order.working_status === "Working"
-                        ? "badge-primary"
-                        : "badge-warning"
-                    }">${order.working_status}</span></td>
-                    <td>${order.desc}</td>
-                    <td>${order.tv}</td>
-                    <td>${order.pr}</td>
-                    <td><span class="badge ${
-                      order.isApproved === "Approved"
-                        ? "badge-success"
-                        : "badge-danger"
-                    }">${order.isApproved}</span></td>
-                    <td>
-                        <button class="btn btn-success" onclick="updateOrderStatus('${
-                          order.order_id
-                        }', '${
+                        <td>${order.order_id}</td>
+                        <td>${order.cname} (${order.email})</td>
+                        <td>${order.Part_Name}</td>
+                        <td>${order.category}</td>
+                        <td><span class="badge ${
+                          order.working_status === "Completed"
+                            ? "badge-success"
+                            : order.working_status === "Working"
+                            ? "badge-primary"
+                            : "badge-warning"
+                        }">${order.working_status}</span></td>
+                        <td>${order.desc}</td>
+                        <td>${order.tv}</td>
+                        <td>${order.pr}</td>
+                        <td><span class="badge ${
+                          order.isApproved === "Approved"
+                            ? "badge-success"
+                            : "badge-danger"
+                        }">${order.isApproved}</span></td>
+                        <td>
+                            <button class="btn btn-success" onclick="updateOrderStatus('${
+                              order.order_id
+                            }', '${
                 supplier.supplierId
               }', 'Accepted')">Accept</button>
-                        <button class="btn btn-danger" onclick="updateOrderStatus('${
-                          order.order_id
-                        }', '${
+                            <button class="btn btn-danger" onclick="updateOrderStatus('${
+                              order.order_id
+                            }', '${
                 supplier.supplierId
               }', 'Rejected')">Reject</button>
-                    </td>
-                `;
+                        </td>
+                    `;
               tbody.appendChild(row);
             });
 
@@ -991,23 +1059,25 @@
         const table = document.createElement("table");
         table.className = "table";
         table.innerHTML = `
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>Customer</th>
-              <th>Part</th>
-              <th>Category</th>
-              <th>Status</th>
-              <th>Description</th>
-              <th>Quantity</th>
-              <th>Price</th>
-              <th>Supplier ID</th>
-              <th>Supplier Responses</th>
-            </tr>
-          </thead>
-          <tbody id="acceptedOrdersTableBody">
-          </tbody>
-        `;
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Part</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Description</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Supplier ID</th>
+            <th>Supplier Responses</th>
+            <th>Assignment</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="acceptedOrdersTableBody">
+        </tbody>
+      `;
 
         const tbody = document.createElement("tbody");
         acceptedOrders.forEach((order) => {
@@ -1015,27 +1085,41 @@
             (response) => response.supplier_Id === supplier.supplierId
           );
 
+          const isAssignedToCurrentSupplier =
+            order.acceptedSupplier &&
+            order.acceptedSupplier.supplier_Id === supplier.supplierId;
+
+          const assignmentStatus = isAssignedToCurrentSupplier
+            ? `<span class="badge badge-success">Assigned to You</span>`
+            : `<span class="badge badge-warning">Assigned to Someone Else</span>`;
+
           const row = document.createElement("tr");
           row.innerHTML = `
-            <td>${order.order_id}</td>
-            <td>${order.cname} (${order.email})</td>
-            <td>${order.Part_Name}</td>
-            <td>${order.category}</td>
-            <td><span class="badge ${
-              order.working_status === "Completed"
-                ? "badge-success"
-                : order.working_status === "Working"
-                ? "badge-primary"
-                : "badge-warning"
-            }">${order.working_status}</span></td>
-            <td>${order.desc}</td>
-            <td>${order.tv}</td>
-            <td>${order.pr}</td>
-            <td>${supplierResponse.supplier_Id}</td>
-            <td><span class="badge badge-success">${
-              supplierResponse.status
-            }</span></td>
-          `;
+          <td>${order.order_id}</td>
+          <td>${order.cname} (${order.email})</td>
+          <td>${order.Part_Name}</td>
+          <td>${order.category}</td>
+          <td><span class="badge ${
+            order.working_status === "Completed"
+              ? "badge-success"
+              : order.working_status === "Working"
+              ? "badge-primary"
+              : "badge-warning"
+          }">${order.working_status}</span></td>
+          <td>${order.desc}</td>
+          <td>${order.tv}</td>
+          <td>${order.pr}</td>
+          <td>${supplierResponse.supplier_Id}</td>
+          <td><span class="badge badge-success">${
+            supplierResponse.status
+          }</span></td>
+          <td>${assignmentStatus}</td>
+          <td>
+            <button class="btn btn-primary" onclick="viewAcceptedOrderDetails('${
+              order.order_id
+            }')">View</button>
+          </td>
+        `;
           tbody.appendChild(row);
         });
 
@@ -1067,23 +1151,24 @@
         const table = document.createElement("table");
         table.className = "table";
         table.innerHTML = `
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>Customer</th>
-              <th>Part</th>
-              <th>Category</th>
-              <th>Status</th>
-              <th>Description</th>
-              <th>Quantity</th>
-              <th>Price</th>
-              <th>Supplier ID</th>
-              <th>Supplier Responses</th>
-            </tr>
-          </thead>
-          <tbody id="rejectedOrdersTableBody">
-          </tbody>
-        `;
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Part</th>
+                  <th>Category</th>
+                  <th>Status</th>
+                  <th>Description</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+                  <th>Supplier ID</th>
+                  <th>Supplier Responses</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="rejectedOrdersTableBody">
+              </tbody>
+            `;
 
         const tbody = document.createElement("tbody");
         rejectedOrders.forEach((order) => {
@@ -1093,25 +1178,29 @@
 
           const row = document.createElement("tr");
           row.innerHTML = `
-            <td>${order.order_id}</td>
-            <td>${order.cname} (${order.email})</td>
-            <td>${order.Part_Name}</td>
-            <td>${order.category}</td>
-            <td><span class="badge ${
-              order.working_status === "Completed"
-                ? "badge-success"
-                : order.working_status === "Working"
-                ? "badge-primary"
-                : "badge-warning"
-            }">${order.working_status}</span></td>
-            <td>${order.desc}</td>
-            <td>${order.tv}</td>
-            <td>${order.pr}</td>
-            <td>${supplierResponse.supplier_Id}</td>
-            <td><span class="badge badge-danger">${
-              supplierResponse.status
-            }</span></td>
-          `;
+                <td>${order.order_id}</td>
+                <td>${order.cname} (${order.email})</td>
+                <td>${order.Part_Name}</td>
+                <td>${order.category}</td>
+                <td><span class="badge ${
+                  order.working_status === "Completed"
+                    ? "badge-success"
+                    : order.working_status === "Working"
+                    ? "badge-primary"
+                    : "badge-warning"
+                }">${order.working_status}</span></td>
+                <td>${order.desc}</td>
+                <td>${order.tv}</td>
+                <td>${order.pr}</td>
+                <td>${supplierResponse.supplier_Id}</td>
+                <td><span class="badge badge-danger">${
+                  supplierResponse.status
+                }</span></td>
+                <td>
+        <button class="btn btn-primary" onclick="viewRejectedOrderDetails('${
+          order.order_id
+        }')">View</button>
+              `;
           tbody.appendChild(row);
         });
 
@@ -1120,8 +1209,520 @@
       }
 
       function viewOrderDetails(orderId) {
-        alert(`Viewing details for order ${orderId}`);
-        // You can implement a modal or redirect to show detailed order information
+        const supplierData = sessionStorage.getItem("supplier");
+        if (!supplierData) {
+          alert("Supplier data not found. Please login again.");
+          return;
+        }
+
+        const supplier = JSON.parse(supplierData);
+
+        // Find the order in assigned orders
+        const assignedOrdersContainer =
+          document.getElementById("assignedOrders");
+        const rows = assignedOrdersContainer.querySelectorAll("tbody tr");
+
+        let order = null;
+        for (const row of rows) {
+          const rowOrderId = row.cells[0].textContent;
+          if (rowOrderId === orderId) {
+            order = {
+              order_id: rowOrderId,
+              cname: row.cells[1].textContent.split(" (")[0],
+              email: row.cells[1].textContent.match(/\((.*?)\)/)[1],
+              Part_Name: row.cells[2].textContent,
+              category: row.cells[3].textContent,
+              working_status: row.cells[4].querySelector(".badge").textContent,
+              desc: row.cells[5].textContent,
+              tv: row.cells[6].textContent,
+              pr: row.cells[7].textContent,
+              isApproved: "Approved", // Since it's assigned, it must be approved
+              acceptedSupplier: {
+                supplier_Id: supplier.supplierId,
+                acceptedAt: row.cells[8].textContent,
+              },
+            };
+            break;
+          }
+        }
+
+        if (!order) {
+          document.getElementById("orderModalBody").innerHTML = `
+            <div class="no-data">Order details not found in assigned orders.</div>
+        `;
+        } else {
+          // Populate the modal with order details
+          document.getElementById("orderModalBody").innerHTML = `
+            <div class="order-details">
+                <div class="detail-group">
+                    <h4>Order Information</h4>
+                    <p><strong>Order ID:</strong> ${order.order_id}</p>
+                    <p><strong>Status:</strong> <span class="badge ${
+                      order.working_status === "Completed"
+                        ? "badge-success"
+                        : order.working_status === "Working"
+                        ? "badge-primary"
+                        : "badge-warning"
+                    }">${order.working_status}</span></p>
+                    <p><strong>Approval Status:</strong> <span class="badge badge-success">${
+                      order.isApproved
+                    }</span></p>
+                </div>
+                
+                <div class="detail-group">
+                    <h4>Part Details</h4>
+                    <p><strong>Part Name:</strong> ${order.Part_Name}</p>
+                    <p><strong>Category:</strong> ${order.category}</p>
+                    <p><strong>Description:</strong> ${order.desc}</p>
+                    <p><strong>Quantity:</strong> ${order.tv}</p>
+                    <p><strong>Price:</strong> ${order.pr}</p>
+                </div>
+                
+                <div class="detail-group">
+                    <h4>Customer Information</h4>
+                    <p><strong>Name:</strong> ${order.cname}</p>
+                    <p><strong>Email:</strong> ${order.email}</p>
+                </div>
+                
+                <div class="detail-group">
+                    <h4>Supplier Assignment</h4>
+                    <p><strong>Supplier ID:</strong> ${
+                      order.acceptedSupplier.supplier_Id
+                    }</p>
+                    <p><strong>Assigned At:</strong> ${
+                      order.acceptedSupplier.acceptedAt
+                    }</p>
+                </div>
+            </div>
+        `;
+        }
+
+        // Show the modal
+        orderModal.style.display = "flex";
+        document.body.style.overflow = "hidden";
+      }
+
+      function viewAcceptedOrderDetails(orderId) {
+        const supplierData = sessionStorage.getItem("supplier");
+        if (!supplierData) {
+          alert("Supplier data not found. Please login again.");
+          return;
+        }
+
+        const supplier = JSON.parse(supplierData);
+        const acceptedOrdersContainer =
+          document.getElementById("acceptedOrders");
+        const rows = acceptedOrdersContainer.querySelectorAll("tbody tr");
+
+        let order = null;
+        for (const row of rows) {
+          const rowOrderId = row.cells[0].textContent;
+          if (rowOrderId === orderId) {
+            const acceptedSupplierId = row.cells[8].textContent;
+
+            const isAssignedToCurrentSupplier =
+              acceptedSupplierId &&
+              acceptedSupplierId.toString() === supplier.supplierId.toString();
+
+            const isAssignedToSomeoneElse =
+              acceptedSupplierId &&
+              acceptedSupplierId.toString() !== supplier.supplierId.toString();
+
+            order = {
+              order_id: rowOrderId,
+              cname: row.cells[1].textContent.split(" (")[0],
+              email: row.cells[1].textContent.match(/\((.*?)\)/)[1],
+              Part_Name: row.cells[2].textContent,
+              category: row.cells[3].textContent,
+              working_status: row.cells[4].querySelector(".badge").textContent,
+              desc: row.cells[5].textContent,
+              quantity: row.cells[6].textContent,
+              price: row.cells[7].textContent,
+              isApproved: "Approved",
+              acceptedSupplierId: acceptedSupplierId,
+              isAssignedToCurrentSupplier,
+              isAssignedToSomeoneElse,
+            };
+            break;
+          }
+        }
+
+        if (!order) {
+          document.getElementById("orderModalBody").innerHTML = `
+      <div class="no-data">Order details not found in accepted orders.</div>
+    `;
+        } else {
+          // Assignment status block
+          let assignmentStatusHtml = "";
+          if (order.isAssignedToCurrentSupplier) {
+            assignmentStatusHtml = `
+        <div class="detail-group">
+            <h4>Assignment Status</h4>
+            <p class="text-success"><i class="fas fa-check-circle"></i> This order is assigned to you</p>
+        </div>`;
+          } else if (order.isAssignedToSomeoneElse) {
+            assignmentStatusHtml = `
+        <div class="detail-group">
+            <h4>Assignment Status</h4>
+            <p class="text-warning"><i class="fas fa-exclamation-triangle"></i> This order is assigned to another supplier</p>
+        </div>`;
+          } else {
+            assignmentStatusHtml = `
+        <div class="detail-group">
+            <h4>Assignment Status</h4>
+            <p class="text-info"><i class="fas fa-info-circle"></i> This order is not assigned to any supplier</p>
+        </div>`;
+          }
+
+          document.getElementById("orderModalBody").innerHTML = `
+      <div class="order-details">
+          <div class="detail-group">
+              <h4>Order Information</h4>
+              <p><strong>Order ID:</strong> ${order.order_id}</p>
+              <p><strong>Status:</strong> <span class="badge ${
+                order.working_status === "Completed"
+                  ? "badge-success"
+                  : order.working_status === "Working"
+                  ? "badge-primary"
+                  : "badge-warning"
+              }">${order.working_status}</span></p>
+              <p><strong>Approval Status:</strong> <span class="badge badge-success">${
+                order.isApproved
+              }</span></p>
+          </div>
+
+          ${assignmentStatusHtml}
+
+          <div class="detail-group">
+              <h4>Part Details</h4>
+              <p><strong>Part Name:</strong> ${order.Part_Name}</p>
+              <p><strong>Category:</strong> ${order.category}</p>
+              <p><strong>Description:</strong> ${order.desc}</p>
+              <p><strong>Quantity:</strong> ${order.quantity}</p>
+              <p><strong>Price:</strong> ${order.price}</p>
+          </div>
+
+          <div class="detail-group">
+              <h4>Customer Information</h4>
+              <p><strong>Name:</strong> ${order.cname}</p>
+              <p><strong>Email:</strong> ${order.email}</p>
+          </div>
+      </div>
+    `;
+        }
+
+        // Show the modal
+        orderModal.style.display = "flex";
+        document.body.style.overflow = "hidden";
+      }
+
+      function viewRejectedOrderDetails(orderId) {
+        const supplierData = sessionStorage.getItem("supplier");
+        if (!supplierData) {
+          alert("Supplier data not found. Please login again.");
+          return;
+        }
+
+        const supplier = JSON.parse(supplierData);
+        const rejectedOrdersContainer =
+          document.getElementById("rejectedOrders");
+        const rows = rejectedOrdersContainer.querySelectorAll("tbody tr");
+
+        for (const row of rows) {
+          const rowOrderId = row.cells[0].textContent;
+          if (rowOrderId === orderId) {
+            const responseSupplierId = row.cells[8].textContent;
+            const acceptedSupplierId =
+              row.cells.length > 10 ? row.cells[10].textContent : null;
+
+            const isCurrentSupplier =
+              responseSupplierId === supplier.supplierId.toString();
+
+            const isAssignedToSomeoneElse =
+              acceptedSupplierId &&
+              acceptedSupplierId.toString() !== supplier.supplierId.toString();
+
+            const isAssignedToCurrentSupplier =
+              acceptedSupplierId &&
+              acceptedSupplierId.toString() === supplier.supplierId.toString();
+
+            const order = {
+              order_id: rowOrderId,
+              cname: row.cells[1].textContent.split(" (")[0],
+              email: row.cells[1].textContent.match(/\((.*?)\)/)[1],
+              Part_Name: row.cells[2].textContent,
+              category: row.cells[3].textContent,
+              working_status: row.cells[4].querySelector(".badge").textContent,
+              desc: row.cells[5].textContent,
+              tv: row.cells[6].textContent,
+              pr: row.cells[7].textContent,
+              isApproved: "Approved",
+              isCurrentSupplier,
+              isAssignedToSomeoneElse,
+              isAssignedToCurrentSupplier,
+              acceptedSupplierId,
+            };
+
+            showOrderModal(order, "rejected");
+            return;
+          }
+        }
+
+        showNotFoundMessage("rejected");
+      }
+
+      function showOrderModal(order, type) {
+        let assignmentStatusHtml = "";
+
+        if (type === "accepted") {
+          assignmentStatusHtml = order.isAssignedToCurrentSupplier
+            ? `<div class="detail-group">
+          <h4>Assignment Status</h4>
+          <p class="text-success"><i class="fas fa-check-circle"></i> This order is assigned to you</p>
+      </div>`
+            : `<div class="detail-group">
+          <h4>Assignment Status</h4>
+          <p class="text-warning"><i class="fas fa-exclamation-triangle"></i> 
+              ${
+                order.acceptedSupplierId
+                  ? "This order is assigned to another supplier"
+                  : "This order is not assigned to any supplier"
+              }
+          </p>
+      </div>`;
+        } else if (type === "rejected") {
+          if (order.isAssignedToSomeoneElse) {
+            assignmentStatusHtml = `
+          <div class="detail-group">
+              <h4>Assignment Status</h4>
+              <p class="text-warning"><i class="fas fa-exclamation-triangle"></i> 
+                  This order was assigned to another supplier
+              </p>
+          </div>`;
+          } else if (order.isAssignedToCurrentSupplier) {
+            assignmentStatusHtml = `
+          <div class="detail-group">
+              <h4>Assignment Status</h4>
+              <p class="text-success"><i class="fas fa-check-circle"></i> 
+                  This order was assigned to you
+              </p>
+          </div>`;
+          } else if (order.isCurrentSupplier) {
+            assignmentStatusHtml = `
+          <div class="detail-group">
+              <h4>Assignment Status</h4>
+              <p class="text-info"><i class="fas fa-info-circle"></i> 
+                  You rejected this order
+              </p>
+          </div>`;
+          }
+        }
+
+        document.getElementById("orderModalBody").innerHTML = `
+    <div class="order-details">
+        <div class="detail-group">
+            <h4>Order Information</h4>
+            <p><strong>Order ID:</strong> ${order.order_id}</p>
+            <p><strong>Status:</strong> <span class="badge ${
+              order.working_status === "Completed"
+                ? "badge-success"
+                : order.working_status === "Working"
+                ? "badge-primary"
+                : "badge-warning"
+            }">${order.working_status}</span></p>
+            <p><strong>Approval Status:</strong> <span class="badge badge-success">${
+              order.isApproved
+            }</span></p>
+        </div>
+        
+        ${assignmentStatusHtml}
+        
+        <div class="detail-group">
+            <h4>Part Details</h4>
+            <p><strong>Part Name:</strong> ${order.Part_Name}</p>
+            <p><strong>Category:</strong> ${order.category}</p>
+            <p><strong>Description:</strong> ${order.desc}</p>
+            <p><strong>Quantity:</strong> ${order.tv}</p>
+            <p><strong>Price:</strong> ${order.pr}</p>
+        </div>
+        
+        <div class="detail-group">
+            <h4>Customer Information</h4>
+            <p><strong>Name:</strong> ${order.cname}</p>
+            <p><strong>Email:</strong> ${order.email}</p>
+        </div>
+        
+        ${
+          type === "rejected"
+            ? `
+        <div class="detail-group">
+            <h4>Rejection Details</h4>
+            <p class="text-danger"><i class="fas fa-exclamation-circle"></i> 
+                ${
+                  order.isCurrentSupplier
+                    ? "You rejected"
+                    : "This order was rejected"
+                }
+            </p>
+        </div>`
+            : ""
+        }
+    </div>
+  `;
+
+        orderModal.style.display = "flex";
+        document.body.style.overflow = "hidden";
+      }
+
+      function showNotFoundMessage(type) {
+        document.getElementById("orderModalBody").innerHTML = `
+    <div class="no-data">Order details not found in ${type} orders.</div>
+  `;
+        orderModal.style.display = "flex";
+        document.body.style.overflow = "hidden";
+      }
+
+      function viewRejectedOrderDetails(orderId) {
+        const supplierData = sessionStorage.getItem("supplier");
+        if (!supplierData) {
+          alert("Supplier data not found. Please login again.");
+          return;
+        }
+
+        const supplier = JSON.parse(supplierData);
+
+        // Find the order in rejected orders
+        const rejectedOrdersContainer =
+          document.getElementById("rejectedOrders");
+        const rows = rejectedOrdersContainer.querySelectorAll("tbody tr");
+
+        let order = null;
+        let assignedToSomeoneElse = false;
+
+        for (const row of rows) {
+          const rowOrderId = row.cells[0].textContent;
+          if (rowOrderId === orderId) {
+            const responseSupplierId = row.cells[8].textContent; // Assuming this is supplier_Id
+            const isCurrentSupplier =
+              responseSupplierId === supplier.supplierId.toString();
+
+            const acceptedSupplierId =
+              row.cells.length > 10 ? row.cells[10].textContent : null;
+
+            order = {
+              order_id: rowOrderId,
+              cname: row.cells[1].textContent.split(" (")[0],
+              email: row.cells[1].textContent.match(/\((.*?)\)/)[1],
+              Part_Name: row.cells[2].textContent,
+              category: row.cells[3].textContent,
+              working_status: row.cells[4].querySelector(".badge").textContent,
+              desc: row.cells[5].textContent,
+              tv: row.cells[6].textContent,
+              pr: row.cells[7].textContent,
+              isApproved: "Approved",
+              supplierResponses: [
+                {
+                  supplier_Id: responseSupplierId,
+                  status: row.cells[9].querySelector(".badge").textContent,
+                  respondedAt: new Date().toISOString(),
+                },
+              ],
+              isCurrentSupplier: isCurrentSupplier,
+              acceptedSupplierId: acceptedSupplierId,
+            };
+
+            // New logic: Check if this order is assigned to someone else
+            if (
+              acceptedSupplierId &&
+              acceptedSupplierId !== supplier.supplierId.toString()
+            ) {
+              assignedToSomeoneElse = true;
+            }
+
+            break;
+          }
+        }
+
+        if (!order) {
+          document.getElementById("orderModalBody").innerHTML = `
+      <div class="no-data">Order details not found in rejected orders.</div>
+    `;
+        } else {
+          // Populate the modal with order details
+          let assignmentStatusHtml = "";
+
+          if (assignedToSomeoneElse) {
+            assignmentStatusHtml = `
+        <div class="detail-group">
+          <h4>Assignment Status</h4>
+          <p class="text-warning"><i class="fas fa-exclamation-triangle"></i> This order was assigned to another supplier</p>
+          
+        </div>
+      `;
+          } else if (order.isCurrentSupplier) {
+            assignmentStatusHtml = `
+        <div class="detail-group">
+          <h4>Assignment Status</h4>
+          <p class="text-info"><i class="fas fa-info-circle"></i> You rejected this order</p>
+        </div>
+      `;
+          }
+
+          document.getElementById("orderModalBody").innerHTML = `
+      <div class="order-details">
+        <div class="detail-group">
+          <h4>Order Information</h4>
+          <p><strong>Order ID:</strong> ${order.order_id}</p>
+          <p><strong>Status:</strong> <span class="badge ${
+            order.working_status === "Completed"
+              ? "badge-success"
+              : order.working_status === "Working"
+              ? "badge-primary"
+              : "badge-warning"
+          }">${order.working_status}</span></p>
+          <p><strong>Approval Status:</strong> <span class="badge badge-success">${
+            order.isApproved
+          }</span></p>
+        </div>
+
+        ${assignmentStatusHtml}
+
+        <div class="detail-group">
+          <h4>Part Details</h4>
+          <p><strong>Part Name:</strong> ${order.Part_Name}</p>
+          <p><strong>Category:</strong> ${order.category}</p>
+          <p><strong>Description:</strong> ${order.desc}</p>
+          <p><strong>Quantity:</strong> ${order.tv}</p>
+          <p><strong>Price:</strong> ${order.pr}</p>
+        </div>
+
+        <div class="detail-group">
+          <h4>Customer Information</h4>
+          <p><strong>Name:</strong> ${order.cname}</p>
+          <p><strong>Email:</strong> ${order.email}</p>
+        </div>
+
+        <div class="detail-group">
+          <h4>Supplier Response</h4>
+          <p><strong>Supplier ID:</strong> ${
+            order.supplierResponses[0].supplier_Id
+          }</p>
+          <p><strong>Response:</strong> <span class="badge badge-danger">${
+            order.supplierResponses[0].status
+          }</span></p>
+          ${
+            order.isCurrentSupplier
+              ? '<p class="text-danger"><i class="fas fa-exclamation-circle"></i> You rejected this order</p>'
+              : '<p class="text-danger"><i class="fas fa-exclamation-circle"></i> This order was rejected</p>'
+          }
+        </div>
+      </div>
+    `;
+        }
+
+        // Show the modal
+        orderModal.style.display = "flex";
+        document.body.style.overflow = "hidden";
       }
 
       async function updateOrderStatus(orderId, supplierId, status) {
