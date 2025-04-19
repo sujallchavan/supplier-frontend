@@ -47,9 +47,9 @@
         background-color: var(--primary-color);
         color: white;
         min-height: 100vh;
-        transition: transform 0.3s ease;
+        transition: all 0.3s;
         position: fixed;
-        z-index: 1050;
+        z-index: 1000;
       }
 
       .sidebar-header {
@@ -426,6 +426,65 @@
         border-radius: 0.25rem;
       }
 
+      /* Responsive Styles */
+      @media (max-width: 992px) {
+        .sidebar {
+          margin-left: -250px;
+        }
+
+        .main-content {
+          margin-left: 0;
+        }
+
+        .sidebar.active {
+          margin-left: 0;
+        }
+
+        .main-content.active {
+          margin-left: 250px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .supplier-info {
+          grid-template-columns: 1fr;
+        }
+
+        .modal-content {
+          width: 95%;
+        }
+
+        .modal-profile {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .modal-profile-img {
+          margin-right: 0;
+          margin-bottom: 1rem;
+        }
+
+        .order-details {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Toggle Button for Mobile */
+      .sidebar-toggle {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--text-color);
+        cursor: pointer;
+      }
+
+      @media (max-width: 992px) {
+        .sidebar-toggle {
+          display: block;
+        }
+      }
+
       /* No Data Message */
       .no-data {
         text-align: center;
@@ -466,273 +525,6 @@
         color: #1f2d3d;
         background-color: var(--warning-color);
       }
-
-      /* Responsive Styles */
-      @media (max-width: 1200px) {
-        .sidebar {
-          width: 220px;
-        }
-        .main-content {
-          margin-left: 220px;
-        }
-      }
-
-      @media (max-width: 992px) {
-        .sidebar {
-          width: 220px;
-          transform: translateX(-220px);
-        }
-
-        .sidebar.active {
-          transform: translateX(0);
-        }
-
-        .main-content {
-          margin-left: 0;
-          width: 100%;
-        }
-
-        .topbar h1 {
-          font-size: 1.25rem;
-        }
-
-        .supplier-info {
-          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        }
-      }
-
-      @media (max-width: 768px) {
-        .topbar {
-          padding: 0 1rem;
-          height: auto;
-          min-height: 4.375rem;
-        }
-
-        .container-fluid {
-          padding: 1rem;
-        }
-
-        .card-body {
-          padding: 1rem;
-        }
-
-        .supplier-info {
-          grid-template-columns: 1fr;
-        }
-
-        .order-details {
-          grid-template-columns: 1fr;
-        }
-
-        .table th,
-        .table td {
-          padding: 0.5rem;
-          font-size: 0.875rem;
-        }
-
-        .btn {
-          padding: 0.25rem 0.5rem;
-          font-size: 0.75rem;
-        }
-
-        #btn1 {
-          float: right;
-        }
-
-        td[data-label="Action"] {
-          text-align: right;
-        }
-        .info-item h3 {
-          font-size: 0.875rem;
-        }
-
-        .info-item p {
-          font-size: 1rem;
-        }
-      }
-
-      @media (max-width: 576px) {
-        .topbar {
-          flex-direction: column;
-          align-items: flex-start;
-          padding: 0.75rem 1rem;
-          height: auto;
-        }
-
-        .topbar h1 {
-          margin-bottom: 0.5rem;
-        }
-
-        .user-info {
-          margin-top: 0.5rem;
-        }
-
-        .modal-content {
-          width: 95%;
-        }
-
-        .modal-profile {
-          flex-direction: column;
-          text-align: center;
-        }
-
-        .modal-profile-img {
-          margin-right: 0;
-          margin-bottom: 1rem;
-        }
-
-        .modal-detail-item h5 {
-          font-size: 0.8125rem;
-        }
-
-        .modal-detail-item p {
-          font-size: 0.875rem;
-        }
-
-        .btn-logout {
-          padding: 0.5rem;
-          font-size: 0.75rem;
-        }
-      }
-
-      /* Mobile Menu Toggle */
-      .sidebar-toggle {
-        display: none;
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        color: var(--text-color);
-        cursor: pointer;
-        margin-right: 1rem;
-      }
-
-      @media (max-width: 992px) {
-        .sidebar-toggle {
-          display: block;
-        }
-      }
-
-      /* Sidebar Overlay */
-      .sidebar-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1040;
-        display: none;
-      }
-
-      .sidebar.active + .sidebar-overlay {
-        display: block;
-      }
-
-      body.sidebar-open {
-        overflow: hidden;
-      }
-
-      /* Table cell text wrapping */
-      .table td {
-        word-break: break-word;
-      }
-
-      /* Responsive table cells */
-      @media (max-width: 768px) {
-        .table-responsive table,
-        .table-responsive thead,
-        .table-responsive tbody,
-        .table-responsive th,
-        .table-responsive td,
-        .table-responsive tr {
-          display: block;
-        }
-
-        .table-responsive thead tr {
-          position: absolute;
-          top: -9999px;
-          left: -9999px;
-        }
-
-        .table-responsive tr {
-          margin-bottom: 1rem;
-          border: 1px solid #e3e6f0;
-          border-radius: 0.35rem;
-        }
-
-        .table-responsive td {
-          border: none;
-          border-bottom: 1px solid #e3e6f0;
-          position: relative;
-          padding-left: 50%;
-          text-align: right;
-        }
-
-        .table-responsive td:before {
-          position: absolute;
-          top: 0.75rem;
-          left: 0.75rem;
-          width: 45%;
-          padding-right: 1rem;
-          white-space: nowrap;
-          content: attr(data-label);
-          text-align: left;
-          font-weight: bold;
-          color: var(--text-color);
-        }
-
-        /* Hide some columns on mobile */
-        .table-responsive td:nth-child(n + 6) {
-          display: none;
-        }
-
-        /* Show action buttons */
-        .table-responsive td:last-child {
-          display: inline-block;
-          display: flex;
-          flex-direction: row;
-          gap: 10px;
-          justify-content: center;
-        }
-      }
-
-      /* Small mobile devices */
-      @media (max-width: 480px) {
-        .nav-link span {
-          display: none;
-        }
-
-        .nav-link i {
-          margin-right: 0;
-          font-size: 1rem;
-        }
-
-        .sidebar-header {
-          padding: 1rem 0.5rem;
-          font-size: 1rem;
-        }
-
-        .card-header h2 {
-          font-size: 1.1rem;
-        }
-
-        .modal-header h3 {
-          font-size: 1rem;
-        }
-
-        .modal-body {
-          padding: 1rem;
-        }
-
-        .btn {
-          margin-bottom: 0.25rem;
-        }
-
-        #btn1 {
-          margin-right: -3.75rem;
-          margin-bottom: 0.25rem;
-        }
-      }
     </style>
   </head>
   <body>
@@ -755,7 +547,7 @@
           </a>
         </div>
         <div class="nav-item">
-          <a href="suppliertest.html" class="nav-link">
+          <a href="#" class="nav-link">
             <i class="fas fa-fw fa-check-circle"></i>
             <span>Accepted Orders</span>
           </a>
@@ -790,9 +582,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Sidebar Overlay -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <!-- Main Content -->
     <div class="main-content" id="main-content">
@@ -914,37 +703,13 @@
     </div>
 
     <script>
-      // Sidebar toggle functionality
-      document.addEventListener("DOMContentLoaded", function () {
-        const sidebar = document.getElementById("sidebar");
-        const sidebarToggle = document.getElementById("sidebarToggle");
-        const sidebarOverlay = document.getElementById("sidebarOverlay");
-
-        // Toggle sidebar on button click
-        sidebarToggle.addEventListener("click", function () {
-          sidebar.classList.toggle("active");
-          document.body.classList.toggle("sidebar-open");
+      // Toggle sidebar on mobile
+      document
+        .getElementById("sidebarToggle")
+        .addEventListener("click", function () {
+          document.getElementById("sidebar").classList.toggle("active");
+          document.getElementById("main-content").classList.toggle("active");
         });
-
-        // Close sidebar when clicking overlay
-        sidebarOverlay.addEventListener("click", function () {
-          sidebar.classList.remove("active");
-          document.body.classList.remove("sidebar-open");
-        });
-
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener("click", function (event) {
-          if (
-            window.innerWidth <= 992 &&
-            !sidebar.contains(event.target) &&
-            event.target !== sidebarToggle &&
-            !event.target.closest(".modal")
-          ) {
-            sidebar.classList.remove("active");
-            document.body.classList.remove("sidebar-open");
-          }
-        });
-      });
 
       // Modal functionality
       const userModal = document.getElementById("userModal");
@@ -960,7 +725,7 @@
         .getElementById("userInfoTop")
         .addEventListener("click", function () {
           userModal.style.display = "flex";
-          document.body.style.overflow = "hidden";
+          document.body.style.overflow = "hidden"; // Prevent scrolling when modal is open
         });
 
       // Close modal when clicking close button
@@ -1148,28 +913,26 @@
             pendingOrders.forEach((order) => {
               const row = document.createElement("tr");
               row.innerHTML = `
-                        <td data-label="Order ID">${order.order_id}</td>
-                        <td data-label="Customer">${order.cname} (${
-                order.email
-              })</td>
-                        <td data-label="Part">${order.Part_Name}</td>
-                        <td data-label="Category">${order.category}</td>
-                        <td data-label="Status"><span class="badge ${
+                        <td>${order.order_id}</td>
+                        <td>${order.cname} (${order.email})</td>
+                        <td>${order.Part_Name}</td>
+                        <td>${order.category}</td>
+                        <td><span class="badge ${
                           order.working_status === "Completed"
                             ? "badge-success"
                             : order.working_status === "Working"
                             ? "badge-primary"
                             : "badge-warning"
                         }">${order.working_status}</span></td>
-                        <td data-label="Description">${order.desc}</td>
-                        <td data-label="Quantity">${order.tv}</td>
-                        <td data-label="Price">${order.pr}</td>
-                        <td data-label="Approval Status"><span class="badge ${
+                        <td>${order.desc}</td>
+                        <td>${order.tv}</td>
+                        <td>${order.pr}</td>
+                        <td><span class="badge ${
                           order.isApproved === "Approved"
                             ? "badge-success"
                             : "badge-danger"
                         }">${order.isApproved}</span></td>
-                        <td data-label="Action">
+                        <td>
                             <button class="btn btn-success" onclick="updateOrderStatus('${
                               order.order_id
                             }', '${
@@ -1240,27 +1003,27 @@
         assignedOrders.forEach((order) => {
           const row = document.createElement("tr");
           row.innerHTML = `
-            <td data-label="Order ID">${order.order_id}</td>
-            <td data-label="Customer">${order.cname} (${order.email})</td>
-            <td data-label="Part">${order.Part_Name}</td>
-            <td data-label="Category">${order.category}</td>
-            <td data-label="Status"><span class="badge ${
+            <td>${order.order_id}</td>
+            <td>${order.cname} (${order.email})</td>
+            <td>${order.Part_Name}</td>
+            <td>${order.category}</td>
+            <td><span class="badge ${
               order.working_status === "Completed"
                 ? "badge-success"
                 : order.working_status === "Working"
                 ? "badge-primary"
                 : "badge-warning"
             }">${order.working_status}</span></td>
-            <td data-label="Description">${order.desc}</td>
-            <td data-label="Quantity">${order.tv}</td>
-            <td data-label="Price">${order.pr}</td>
-            <td data-label="Assigned Date">${
+            <td>${order.desc}</td>
+            <td>${order.tv}</td>
+            <td>${order.pr}</td>
+            <td>${
               order.acceptedSupplier?.acceptedAt
                 ? new Date(order.acceptedSupplier.acceptedAt).toLocaleString()
                 : "N/A"
             }</td>
-            <td data-label="Action">
-              <button class="btn btn-primary" id="btn1" onclick="viewOrderDetails('${
+            <td>
+              <button class="btn btn-primary" onclick="viewOrderDetails('${
                 order.order_id
               }')">View</button>
             </td>
@@ -1332,27 +1095,27 @@
 
           const row = document.createElement("tr");
           row.innerHTML = `
-          <td data-label="Order ID">${order.order_id}</td>
-          <td data-label="Customer">${order.cname} (${order.email})</td>
-          <td data-label="Part">${order.Part_Name}</td>
-          <td data-label="Category">${order.category}</td>
-          <td data-label="Status"><span class="badge ${
+          <td>${order.order_id}</td>
+          <td>${order.cname} (${order.email})</td>
+          <td>${order.Part_Name}</td>
+          <td>${order.category}</td>
+          <td><span class="badge ${
             order.working_status === "Completed"
               ? "badge-success"
               : order.working_status === "Working"
               ? "badge-primary"
               : "badge-warning"
           }">${order.working_status}</span></td>
-          <td data-label="Description">${order.desc}</td>
-          <td data-label="Quantity">${order.tv}</td>
-          <td data-label="Price">${order.pr}</td>
-          <td data-label="Supplier ID">${supplierResponse.supplier_Id}</td>
-          <td data-label="Supplier Responses"><span class="badge badge-success">${
+          <td>${order.desc}</td>
+          <td>${order.tv}</td>
+          <td>${order.pr}</td>
+          <td>${supplierResponse.supplier_Id}</td>
+          <td><span class="badge badge-success">${
             supplierResponse.status
           }</span></td>
-          <td data-label="Assignment">${assignmentStatus}</td>
-          <td data-label="Action">
-            <button class="btn btn-primary" id="btn1" onclick="viewAcceptedOrderDetails('${
+          <td>${assignmentStatus}</td>
+          <td>
+            <button class="btn btn-primary" onclick="viewAcceptedOrderDetails('${
               order.order_id
             }')">View</button>
           </td>
@@ -1415,31 +1178,28 @@
 
           const row = document.createElement("tr");
           row.innerHTML = `
-                <td data-label="Order ID">${order.order_id}</td>
-                <td data-label="Customer">${order.cname} (${order.email})</td>
-                <td data-label="Part">${order.Part_Name}</td>
-                <td data-label="Category">${order.category}</td>
-                <td data-label="Status"><span class="badge ${
+                <td>${order.order_id}</td>
+                <td>${order.cname} (${order.email})</td>
+                <td>${order.Part_Name}</td>
+                <td>${order.category}</td>
+                <td><span class="badge ${
                   order.working_status === "Completed"
                     ? "badge-success"
                     : order.working_status === "Working"
                     ? "badge-primary"
                     : "badge-warning"
                 }">${order.working_status}</span></td>
-                <td data-label="Description">${order.desc}</td>
-                <td data-label="Quantity">${order.tv}</td>
-                <td data-label="Price">${order.pr}</td>
-                <td data-label="Supplier ID">${
-                  supplierResponse.supplier_Id
-                }</td>
-                <td data-label="Supplier Responses"><span class="badge badge-danger">${
+                <td>${order.desc}</td>
+                <td>${order.tv}</td>
+                <td>${order.pr}</td>
+                <td>${supplierResponse.supplier_Id}</td>
+                <td><span class="badge badge-danger">${
                   supplierResponse.status
                 }</span></td>
-                <td data-label="Action">
-                  <button class="btn btn-primary" id="btn1" onclick="viewRejectedOrderDetails('${
-                    order.order_id
-                  }')">View</button>
-                </td>
+                <td>
+        <button class="btn btn-primary" onclick="viewRejectedOrderDetails('${
+          order.order_id
+        }')">View</button>
               `;
           tbody.appendChild(row);
         });
