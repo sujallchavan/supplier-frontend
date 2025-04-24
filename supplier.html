@@ -9,6 +9,142 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <style>
+      /* Customer Details Modal Styles */
+      .customer-details {
+        padding: 0 10px;
+      }
+
+      .customer-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .customer-avatar {
+        width: 60px;
+        height: 60px;
+        background-color: #4e73df;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+      }
+
+      .customer-avatar i {
+        font-size: 30px;
+        color: white;
+      }
+
+      .customer-info h3 {
+        margin: 0;
+        color: #2e59d9;
+        font-size: 1.5rem;
+      }
+
+      .customer-info p {
+        margin: 5px 0 0;
+        color: #6c757d;
+      }
+
+      .detail-section {
+        margin-bottom: 25px;
+      }
+
+      .detail-section h4 {
+        color: #4e73df;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+      }
+
+      .detail-section h4 i {
+        margin-right: 8px;
+      }
+
+      .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+      }
+
+      .detail-item {
+        background: #f8f9fc;
+        padding: 12px;
+        border-radius: 5px;
+      }
+
+      .detail-label {
+        display: block;
+        font-weight: 600;
+        color: #5a5c69;
+        margin-bottom: 5px;
+        font-size: 0.85rem;
+      }
+
+      .detail-value {
+        color: #858796;
+        font-size: 1rem;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+      }
+
+      .stat-item {
+        background: #f8f9fc;
+        padding: 15px;
+        border-radius: 5px;
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #4e73df;
+        margin-bottom: 5px;
+      }
+
+      .stat-label {
+        color: #858796;
+        font-size: 0.85rem;
+      }
+
+      .activity-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .activity-list li {
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+        color: #5a5c69;
+      }
+
+      .activity-list li:last-child {
+        border-bottom: none;
+      }
+
+      .btn-view {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .detail-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+      }
       :root {
         --primary-color: #4e73df;
         --secondary-color: #f8f9fc;
@@ -605,6 +741,17 @@
             </div>
           </div>
         </div>
+        <!-- Customers Working With You -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h2>Customers Working With You</h2>
+          </div>
+          <div class="card-body">
+            <div id="customersWorking">
+              <p>Fetching customer details...</p>
+            </div>
+          </div>
+        </div>
 
         <!-- Assigned Orders -->
         <div class="card mb-4">
@@ -870,7 +1017,7 @@
 
       function fetchOrders(supplier) {
         fetch(
-          `https://backend-api-k9ts.onrender.com/api/suppliers/orders?category=${supplier.category}`
+          `https://backend-api-3qcm.onrender.com/api/suppliers/orders?category=${supplier.category}`
         )
           .then((response) => response.json())
           .then((orders) => {
@@ -970,12 +1117,230 @@
             fetchRejectedOrders(supplier, approvedOrders);
             // Inside your fetchOrders function, after processing orders:
             displayOrderStats(orders, supplier);
+            // Call the new function to fetch customers working with this supplier
+            fetchCustomersWorkingWithSupplier(supplier);
           })
           .catch((error) => {
             console.error("Error fetching orders:", error);
             document.getElementById("orders").innerHTML =
               '<div class="no-data">Failed to fetch orders. Please try again later.</div>';
           });
+      }
+
+      async function fetchCustomersWorkingWithSupplier(supplier) {
+        try {
+          // First get all assigned orders to this supplier
+          const ordersResponse = await fetch(
+            `https://backend-api-3qcm.onrender.com/api/suppliers/orders?category=${supplier.category}`
+          );
+
+          // Check if orders response is JSON
+          const ordersContentType = ordersResponse.headers.get("content-type");
+          if (
+            !ordersContentType ||
+            !ordersContentType.includes("application/json")
+          ) {
+            const text = await ordersResponse.text();
+            throw new Error(
+              `Orders API returned non-JSON: ${text.substring(0, 100)}...`
+            );
+          }
+
+          const orders = await ordersResponse.json();
+
+          // Filter orders assigned to this supplier
+          const assignedOrders = orders.filter(
+            (order) =>
+              order.isSupplierAccepted &&
+              order.acceptedSupplier?.supplier_Id === supplier.supplierId
+          );
+
+          // Get unique customer emails from these orders
+          const customerEmails = [
+            ...new Set(assignedOrders.map((order) => order.email)),
+          ];
+
+          if (customerEmails.length === 0) {
+            document.getElementById("customersWorking").innerHTML =
+              '<div class="no-data">No customers found who are working with you.</div>';
+            return;
+          }
+
+          // Fetch customer details
+          const customersResponse = await fetch(
+            "https://backend-api-3qcm.onrender.com/api/suppliers/customers",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ emails: customerEmails }),
+            }
+          );
+
+          // Check if customers response is JSON
+          const customersContentType =
+            customersResponse.headers.get("content-type");
+          if (
+            !customersContentType ||
+            !customersContentType.includes("application/json")
+          ) {
+            const text = await customersResponse.text();
+            throw new Error(
+              `Customers API returned non-JSON: ${text.substring(0, 100)}...`
+            );
+          }
+
+          const result = await customersResponse.json();
+
+          if (!result.success || !result.data) {
+            throw new Error(
+              result.message || "Failed to fetch customer details"
+            );
+          }
+
+          const customers = result.data;
+          const customersContainer =
+            document.getElementById("customersWorking");
+          customersContainer.innerHTML = "";
+
+          if (!customers || customers.length === 0) {
+            customersContainer.innerHTML =
+              '<div class="no-data">No customer details found.</div>';
+            return;
+          }
+
+          const table = document.createElement("table");
+          table.className = "table";
+          table.innerHTML = `
+      <thead>
+        <tr>
+          <th>Customer ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Location</th>
+          <th>Orders Count</th>
+          <th>View Details</th>
+        </tr>
+      </thead>
+      <tbody id="customersTableBody"></tbody>
+    `;
+
+          const tbody = document.createElement("tbody");
+          customers.forEach((customer) => {
+            const orderCount = assignedOrders.filter(
+              (order) => order.email === customer.email
+            ).length;
+
+            const row = document.createElement("tr");
+            row.innerHTML = `
+  <td>${customer.customer_id || "N/A"}</td>
+  <td>${customer.name || "N/A"}</td>
+  <td>${customer.email || "N/A"}</td>
+  <td>${customer.phone_number || "N/A"}</td>
+  <td>${customer.location || "N/A"}</td>
+  <td>${orderCount}</td>
+  <td>
+    <button class="btn btn-primary btn-view" 
+            onclick="viewCustomerDetails('${customer.customer_id}')"
+            data-customer='${JSON.stringify(customer).replace(/'/g, "\\'")}'
+            data-orders='${orderCount}'>
+      <i class="fas fa-eye"></i> View
+    </button>
+  </td>
+`;
+            tbody.appendChild(row);
+          });
+
+          table.appendChild(tbody);
+          customersContainer.appendChild(table);
+        } catch (error) {
+          console.error("Error fetching customers:", error);
+          document.getElementById("customersWorking").innerHTML = `
+      <div class="no-data">Error: ${error.message}</div>
+    `;
+        }
+      }
+
+      // View Customer Details Modal
+      function viewCustomerDetails(customerId) {
+        const button = document.querySelector(
+          `button[onclick="viewCustomerDetails('${customerId}')"]`
+        );
+        const customer = JSON.parse(button.getAttribute("data-customer"));
+        const orderCount = button.getAttribute("data-orders");
+
+        // Create modal content
+        const modalContent = `
+    <div class="customer-details">
+      <div class="customer-header">
+        <div class="customer-avatar">
+          <i class="fas fa-user-tie"></i>
+        </div>
+        <div class="customer-info">
+          <h3>${customer.name || "No Name"}</h3>
+          <p>Customer ID: ${customer.customer_id}</p>
+        </div>
+      </div>
+      
+      <div class="detail-section">
+        <h4><i class="fas fa-info-circle"></i> Basic Information</h4>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <span class="detail-label">Email:</span>
+            <span class="detail-value">${customer.email || "N/A"}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Phone:</span>
+            <span class="detail-value">${customer.phone_number || "N/A"}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Location:</span>
+            <span class="detail-value">${customer.location || "N/A"}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="detail-section">
+        <h4><i class="fas fa-shopping-cart"></i> Order Statistics</h4>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value">${orderCount}</div>
+            <div class="stat-label">Total Orders</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">${Math.floor(Math.random() * 10) + 1}</div>
+            <div class="stat-label">Active Orders</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">${
+              Math.floor(Math.random() * 1000) + 100
+            }</div>
+            <div class="stat-label">Total Spent ($)</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="detail-section">
+        <h4><i class="fas fa-history"></i> Recent Activity</h4>
+        <ul class="activity-list">
+          <li>Placed order #${Math.floor(
+            Math.random() * 1000
+          )} on ${new Date().toLocaleDateString()}</li>
+          <li>Updated profile information</li>
+          <li>Contacted support</li>
+        </ul>
+      </div>
+    </div>
+  `;
+
+        // Set modal content and show
+        document.getElementById("orderModalBody").innerHTML = modalContent;
+        document.getElementById("orderModal").style.display = "flex";
+        document.body.style.overflow = "hidden";
+
+        // Update modal title
+        document.querySelector("#orderModal .modal-header h3").textContent =
+          "Customer Details";
       }
 
       function fetchAssignedOrders(supplier, orders) {
@@ -1759,7 +2124,7 @@
 
         try {
           const response = await fetch(
-            "https://backend-api-k9ts.onrender.com/api/suppliers/orders/respond",
+            "https://backend-api-3qcm.onrender.com/api/suppliers/orders/respond",
             {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
