@@ -3,126 +3,544 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Supplier Signup</title>
+    <title>Supplier Signup | Inventory Management System</title>
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
     />
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/argon-dashboard@2.0.4/assets/css/argon-dashboard.css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <style>
+      :root {
+        /* Enhanced Deep Purple/Teal theme with richer tones */
+        --primary: #7c4dff;
+        --primary-light: #b388ff;
+        --secondary: #651fff;
+        --accent: #00bfa5;
+        --accent-light: #64ffda;
+        --light: #f5f7ff;
+        --dark: #1a237e;
+        --dark-light: #534bae;
+        --gray: #5f6368;
+        --white: #ffffff;
+        --card-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+        --hover-shadow: 0 12px 40px rgba(124, 77, 255, 0.25);
+        --text-gradient: linear-gradient(135deg, var(--primary), var(--accent));
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", -apple-system, BlinkMacSystemFont, sans-serif;
+      }
+
       body {
-        background: linear-gradient(to bottom, #e38d3c, #df7226);
-        /* background: linear-gradient(to bottom, #7b3db7, #9b5edb); */
+        background: linear-gradient(135deg, #f5f7ff 0%, #e8eaf6 100%);
+        min-height: 100vh;
+        overflow-x: hidden;
       }
-      .card {
+
+      .hero-container {
+        display: flex;
+        min-height: 100vh;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-top: 55px;
+        padding: 0 8%;
+        position: relative;
+        z-index: 2;
+      }
+
+      .hero-image {
+        flex: 1;
+        background: url("https://images.unsplash.com/photo-1556740738-b6a63e27c4df?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80")
+          no-repeat center center;
+        background-size: cover;
+        position: relative;
+        animation: fadeInRight 1s ease;
+      }
+
+      .hero-image::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          rgba(245, 247, 255, 0.9) 0%,
+          rgba(245, 247, 255, 0.3) 100%
+        );
+      }
+
+      h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        line-height: 1.2;
+        margin-bottom: 1.5rem;
+        background: var(--text-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+        position: relative;
+      }
+
+      h1::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 70px;
+        height: 4px;
+        background: var(--text-gradient);
+        border-radius: 2px;
+      }
+
+      p.subtitle {
+        font-size: 1.25rem;
+        color: var(--gray);
+        margin-bottom: 2.5rem;
+        max-width: 600px;
+        line-height: 1.6;
+        position: relative;
+        padding-left: 20px;
+      }
+
+      p.subtitle::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 8px;
+        height: 60%;
+        width: 3px;
+        background: var(--accent);
+        border-radius: 3px;
+      }
+
+      #signupForm {
+        background: var(--white);
+        padding: 2.5rem;
         border-radius: 15px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 55px;
+        box-shadow: var(--hover-shadow);
+        max-width: 700px; /* Increased width for two columns */
+        border: 1px solid rgba(124, 77, 255, 0.2);
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.5s ease;
       }
-      .btn-primary {
-        background: linear-gradient(to right, #e38d3c, #df7226);
+
+      #signupForm::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: var(--text-gradient);
+      }
+
+      .form-columns {
+        display: flex;
+        gap: 1.5rem;
+      }
+
+      .form-column {
+        flex: 1;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+        position: relative;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--dark);
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: rgba(245, 247, 255, 0.5);
+      }
+
+      .form-group select {
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235f6368' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1em;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.2);
+        outline: none;
+      }
+
+      .btn {
+        padding: 0.8rem 2rem;
+        border-radius: 50px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--card-shadow);
+        position: relative;
+        overflow: hidden;
+        width: 100%;
         border: none;
       }
 
+      .btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: 0.5s;
+      }
+
+      .btn:hover::before {
+        left: 100%;
+      }
+
+      .btn-primary {
+        background-color: var(--primary);
+        color: var(--white);
+        border: 2px solid var(--primary);
+      }
+
       .btn-primary:hover {
-        background: linear-gradient(to right, #df7226, #e38d3c);
-        filter: brightness(1.1);
+        background-color: var(--secondary);
+        border-color: var(--secondary);
+        transform: translateY(-3px);
+        box-shadow: var(--hover-shadow);
+      }
+
+      .form-footer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 1rem;
+        font-size: 0.9rem;
+      }
+
+      .form-footer a {
+        color: var(--primary);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      .form-footer a:hover {
+        text-decoration: underline;
+      }
+
+      #message {
+        margin-top: 1rem;
+        padding: 0.8rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        display: none;
+      }
+
+      .error {
+        background-color: #fee2e2;
+        color: #dc2626;
+        display: block;
+      }
+
+      .success {
+        background-color: #dcfce7;
+        color: #16a34a;
+        display: block;
+      }
+
+      .floating-shapes {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 1;
+      }
+
+      .shape {
+        position: absolute;
+        opacity: 0.08;
+        border-radius: 50%;
+        filter: blur(20px);
+      }
+
+      .shape-1 {
+        width: 300px;
+        height: 300px;
+        background: var(--primary);
+        top: -100px;
+        left: -100px;
+        animation: float 15s infinite ease-in-out;
+      }
+
+      .shape-2 {
+        width: 200px;
+        height: 200px;
+        background: var(--accent);
+        bottom: -50px;
+        right: -50px;
+        animation: float 12s infinite ease-in-out reverse;
+      }
+
+      .shape-3 {
+        width: 150px;
+        height: 150px;
+        background: var(--secondary);
+        top: 40%;
+        right: 20%;
+        animation: float 10s infinite ease-in-out 2s;
+      }
+
+      @media (max-width: 991px) {
+        .hero-image {
+          display: none;
+        }
+
+        .hero-content {
+          padding: 0 5%;
+          align-items: center;
+
+          margin-top: 50px;
+          margin-bottom: 50px;
+        }
+
+        h1 {
+          font-size: 2.5rem;
+        }
+
+        p.subtitle {
+          max-width: 100%;
+          padding-left: 0;
+        }
+
+        p.subtitle::before {
+          display: none;
+        }
+
+        #signupForm {
+          width: 100%;
+          max-width: 400px;
+          padding: 2rem;
+        }
+
+        .form-columns {
+          flex-direction: column;
+          gap: 0;
+        }
+      }
+
+      @media (min-width: 992px) {
+        h1 {
+          font-size: 4rem;
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInRight {
+        from {
+          opacity: 0;
+          transform: translateX(50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0) translateX(0);
+        }
+        50% {
+          transform: translateY(-20px) translateX(20px);
+        }
       }
     </style>
   </head>
   <body>
-    <div
-      class="container d-flex align-items-center justify-content-center min-vh-100"
-    >
-      <div class="card p-4" style="width: 400px">
-        <div class="card-body text-center">
-          <h3 class="mb-3">Create Account</h3>
-          <form id="signupForm">
-            <div class="mb-3">
-              <input
-                type="text"
-                id="name"
-                class="form-control"
-                placeholder="Full Name"
-                required
-              />
-            </div>
-            <div class="mb-3">
-              <input
-                type="email"
-                id="email"
-                class="form-control"
-                placeholder="Email Address"
-                required
-              />
-            </div>
-            <div class="mb-3">
-              <input
-                type="password"
-                id="password"
-                class="form-control"
-                placeholder="Password"
-                required
-              />
-            </div>
-            <div class="mb-3">
-              <input
-                type="text"
-                id="category"
-                class="form-control"
-                placeholder="Category"
-                required
-              />
-            </div>
-            <div class="mb-3">
-              <input
-                type="text"
-                id="phoneNumber"
-                class="form-control"
-                placeholder="Phone Number"
-                required
-              />
-            </div>
-            <div class="mb-3">
-              <input
-                type="text"
-                id="location"
-                class="form-control"
-                placeholder="Location"
-                required
-              />
-            </div>
-            <div class="mb-3">
-              <input
-                type="text"
-                id="companyName"
-                class="form-control"
-                placeholder="Company Name"
-                required
-              />
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Sign Up</button>
-          </form>
-          <p class="mt-3" id="message"></p>
-          <p class="mt-3">
-            Already have an account? <a href="login.html">Sign In</a>
-          </p>
-        </div>
+    <div class="hero-container">
+      <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
       </div>
+
+      <div class="hero-content">
+        <h1 class="animate__animated animate__fadeInDown">
+          Supplier Registration
+        </h1>
+        <p class="subtitle animate__animated animate__fadeIn animate__delay-1s">
+          Create your supplier account to start managing your inventory
+        </p>
+
+        <form
+          id="signupForm"
+          class="animate__animated animate__fadeIn animate__delay-1s"
+        >
+          <h2 style="margin-bottom: 1.5rem; color: var(--dark)">
+            Supplier Sign Up
+          </h2>
+
+          <div class="form-columns">
+            <!-- Left Column -->
+            <div class="form-column">
+              <div class="form-group">
+                <label for="name">Full Name</label>
+                <input
+                  type="text"
+                  id="name"
+                  placeholder="Your full name"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="email">Business Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  placeholder="supplier@yourcompany.com"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  placeholder="Create a password"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="form-column">
+              <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category" required>
+                  <option value="" disabled selected>
+                    Select your category
+                  </option>
+                  <option value="Hardware">Hardware</option>
+                  <option value="Mechanical">Mechanical</option>
+                  <option value="Electrical">Electrical</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <input
+                  type="text"
+                  id="phoneNumber"
+                  placeholder="Your contact number"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="location">Location</label>
+                <input
+                  type="text"
+                  id="location"
+                  placeholder="Your business location"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="companyName">Company Name</label>
+                <input
+                  type="text"
+                  id="companyName"
+                  placeholder="Your company name"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i> Create Account
+          </button>
+
+          <div class="form-footer">
+            <span
+              >Already have an account?
+              <a href="login.html">Sign in here</a></span
+            >
+          </div>
+
+          <div id="message"></div>
+        </form>
+      </div>
+
+      <div class="hero-image"></div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
       document
         .getElementById("signupForm")
         .addEventListener("submit", async (e) => {
           e.preventDefault();
+
+          const message = document.getElementById("message");
+          message.style.display = "none";
+          message.className = "";
+
           const name = document.getElementById("name").value;
           const email = document.getElementById("email").value;
           const password = document.getElementById("password").value;
@@ -148,13 +566,29 @@
                 }),
               }
             );
+
             const result = await response.json();
-            document.getElementById("message").textContent = result.message;
-            if (response.ok) window.location.href = "login.html";
+
+            if (response.ok) {
+              message.textContent =
+                "Account created successfully! Redirecting to login...";
+              message.className = "success";
+              message.style.display = "block";
+
+              setTimeout(() => {
+                window.location.href = "login.html";
+              }, 1500);
+            } else {
+              message.textContent =
+                result.message || "Signup failed. Please try again.";
+              message.className = "error";
+              message.style.display = "block";
+            }
           } catch (error) {
             console.error("Signup Error:", error);
-            document.getElementById("message").textContent =
-              "Signup failed. Please try again.";
+            message.textContent = "Network error. Please try again.";
+            message.className = "error";
+            message.style.display = "block";
           }
         });
     </script>
