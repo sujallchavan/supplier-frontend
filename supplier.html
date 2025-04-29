@@ -1363,8 +1363,8 @@
         const table = document.createElement("table");
         table.className = "table";
         table.innerHTML = `
-            <thead>
-              <tr>
+        <thead>
+            <tr>
                 <th>Order ID</th>
                 <th>Customer</th>
                 <th>Part</th>
@@ -1374,42 +1374,48 @@
                 <th>Quantity</th>
                 <th>Price</th>
                 <th>Assigned Date</th>
+                <th>Final Approval</th>
                 <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="assignedOrdersTableBody">
-            </tbody>
-          `;
+            </tr>
+        </thead>
+        <tbody id="assignedOrdersTableBody">
+        </tbody>
+    `;
 
         const tbody = document.createElement("tbody");
         assignedOrders.forEach((order) => {
           const row = document.createElement("tr");
           row.innerHTML = `
-              <td>${order.order_id}</td>
-              <td>${order.cname} (${order.email})</td>
-              <td>${order.Part_Name}</td>
-              <td>${order.category}</td>
-              <td><span class="badge ${
-                order.working_status === "Completed"
-                  ? "badge-success"
-                  : order.working_status === "Working"
-                  ? "badge-primary"
-                  : "badge-warning"
-              }">${order.working_status}</span></td>
-              <td>${order.desc}</td>
-              <td>${order.tv}</td>
-              <td>${order.pr}</td>
-              <td>${
-                order.acceptedSupplier?.acceptedAt
-                  ? new Date(order.acceptedSupplier.acceptedAt).toLocaleString()
-                  : "N/A"
-              }</td>
-              <td>
+            <td>${order.order_id}</td>
+            <td>${order.cname} (${order.email})</td>
+            <td>${order.Part_Name}</td>
+            <td>${order.category}</td>
+            <td><span class="badge ${
+              order.working_status === "Completed"
+                ? "badge-success"
+                : order.working_status === "Working"
+                ? "badge-primary"
+                : "badge-warning"
+            }">${order.working_status}</span></td>
+            <td>${order.desc}</td>
+            <td>${order.tv}</td>
+            <td>${order.pr}</td>
+            <td>${
+              order.acceptedSupplier?.acceptedAt
+                ? new Date(order.acceptedSupplier.acceptedAt).toLocaleString()
+                : "N/A"
+            }</td>
+            <td><span class="badge ${
+              order.isFinalApproved === "Approved"
+                ? "badge-success"
+                : "badge-danger"
+            }">${order.isFinalApproved || "Disapproved"}</span></td>
+            <td>
                 <button class="btn btn-primary" onclick="viewOrderDetails('${
                   order.order_id
                 }')">View</button>
-              </td>
-            `;
+            </td>
+        `;
           tbody.appendChild(row);
         });
 
@@ -1619,6 +1625,9 @@
               tv: row.cells[6].textContent,
               pr: row.cells[7].textContent,
               isApproved: "Approved", // Since it's assigned, it must be approved
+              isFinalApproved:
+                row.cells[9].querySelector(".badge")?.textContent ||
+                "Disapproved",
               acceptedSupplier: {
                 supplier_Id: supplier.supplierId,
                 acceptedAt: row.cells[8].textContent,
@@ -1630,58 +1639,135 @@
 
         if (!order) {
           document.getElementById("orderModalBody").innerHTML = `
-              <div class="no-data">Order details not found in assigned orders.</div>
-          `;
+            <div class="no-data">Order details not found in assigned orders.</div>
+        `;
         } else {
+          // Create the approval button based on current status
+          const approvalButton =
+            order.isFinalApproved === "Approved"
+              ? `<button class="btn btn-danger" onclick="updateFinalApproval('${order.order_id}', false)">Disapprove</button>`
+              : `<button class="btn btn-success" onclick="updateFinalApproval('${order.order_id}', true)">Approve</button>`;
+
           // Populate the modal with order details
           document.getElementById("orderModalBody").innerHTML = `
-              <div class="order-details">
-                  <div class="detail-group">
-                      <h4>Order Information</h4>
-                      <p><strong>Order ID:</strong> ${order.order_id}</p>
-                      <p><strong>Status:</strong> <span class="badge ${
-                        order.working_status === "Completed"
-                          ? "badge-success"
-                          : order.working_status === "Working"
-                          ? "badge-primary"
-                          : "badge-warning"
-                      }">${order.working_status}</span></p>
-                      <p><strong>Approval Status:</strong> <span class="badge badge-success">${
-                        order.isApproved
-                      }</span></p>
-                  </div>
-                  
-                  <div class="detail-group">
-                      <h4>Part Details</h4>
-                      <p><strong>Part Name:</strong> ${order.Part_Name}</p>
-                      <p><strong>Category:</strong> ${order.category}</p>
-                      <p><strong>Description:</strong> ${order.desc}</p>
-                      <p><strong>Quantity:</strong> ${order.tv}</p>
-                      <p><strong>Price:</strong> ${order.pr}</p>
-                  </div>
-                  
-                  <div class="detail-group">
-                      <h4>Customer Information</h4>
-                      <p><strong>Name:</strong> ${order.cname}</p>
-                      <p><strong>Email:</strong> ${order.email}</p>
-                  </div>
-                  
-                  <div class="detail-group">
-                      <h4>Supplier Assignment</h4>
-                      <p><strong>Supplier ID:</strong> ${
-                        order.acceptedSupplier.supplier_Id
-                      }</p>
-                      <p><strong>Assigned At:</strong> ${
-                        order.acceptedSupplier.acceptedAt
-                      }</p>
-                  </div>
-              </div>
-          `;
+            <div class="order-details">
+                <div class="detail-group">
+                    <h4>Order Information</h4>
+                    <p><strong>Order ID:</strong> ${order.order_id}</p>
+                    <p><strong>Status:</strong> <span class="badge ${
+                      order.working_status === "Completed"
+                        ? "badge-success"
+                        : order.working_status === "Working"
+                        ? "badge-primary"
+                        : "badge-warning"
+                    }">${order.working_status}</span></p>
+                    <p><strong>Approval Status:</strong> <span class="badge badge-success">${
+                      order.isApproved
+                    }</span></p>
+                    <p><strong>Final Approval:</strong> <span class="badge ${
+                      order.isFinalApproved === "Approved"
+                        ? "badge-success"
+                        : "badge-danger"
+                    }">${order.isFinalApproved}</span></p>
+                </div>
+                
+                <div class="detail-group">
+                    <h4>Part Details</h4>
+                    <p><strong>Part Name:</strong> ${order.Part_Name}</p>
+                    <p><strong>Category:</strong> ${order.category}</p>
+                    <p><strong>Description:</strong> ${order.desc}</p>
+                    <p><strong>Quantity:</strong> ${order.tv}</p>
+                    <p><strong>Price:</strong> ${order.pr}</p>
+                </div>
+                
+                <div class="detail-group">
+                    <h4>Customer Information</h4>
+                    <p><strong>Name:</strong> ${order.cname}</p>
+                    <p><strong>Email:</strong> ${order.email}</p>
+                </div>
+                
+                <div class="detail-group">
+                    <h4>Supplier Assignment</h4>
+                    <p><strong>Supplier ID:</strong> ${
+                      order.acceptedSupplier.supplier_Id
+                    }</p>
+                    <p><strong>Assigned At:</strong> ${
+                      order.acceptedSupplier.acceptedAt
+                    }</p>
+                </div>
+                
+                <div class="detail-group">
+                    <h4>Final Approval</h4>
+                    ${approvalButton}
+                </div>
+            </div>
+        `;
         }
 
         // Show the modal
         orderModal.style.display = "flex";
         document.body.style.overflow = "hidden";
+      }
+
+      async function updateFinalApproval(orderId, isApproved) {
+        if (
+          !confirm(
+            `Are you sure you want to ${
+              isApproved ? "approve" : "disapprove"
+            } this order?`
+          )
+        ) {
+          return;
+        }
+
+        try {
+          // Use the correct backend URL - make sure it matches your deployed backend
+          const backendUrl = "https://backend-api-3qcm.onrender.com"; // or your localhost during development
+          const response = await fetch(
+            `${backendUrl}/api/suppliers/update-final-approval/${orderId}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                isFinalApproved: isApproved,
+              }),
+            }
+          );
+
+          // First check if response is OK
+          if (!response.ok) {
+            // Try to parse error response
+            let errorData;
+            try {
+              errorData = await response.json();
+            } catch (e) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            throw new Error(
+              errorData.message || "Failed to update final approval status"
+            );
+          }
+
+          const result = await response.json();
+          if (result.success) {
+            alert(
+              `Order has been ${
+                isApproved ? "approved" : "disapproved"
+              } successfully!`
+            );
+            // Instead of full reload, you could refresh just the order data
+            location.reload();
+          } else {
+            throw new Error(
+              result.message || "Failed to update final approval status"
+            );
+          }
+        } catch (error) {
+          console.error("Error updating final approval:", error);
+          alert(`Error: ${error.message}`);
+        }
       }
 
       function viewAcceptedOrderDetails(orderId) {
