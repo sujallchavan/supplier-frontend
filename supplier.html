@@ -1041,9 +1041,16 @@
                 )
             );
 
+            // Additional filter for working_status - exclude Completed and Working
+            pendingOrders = pendingOrders.filter(
+              (order) =>
+                order.working_status !== "Completed" &&
+                order.working_status !== "Working"
+            );
+
             if (pendingOrders.length === 0) {
               ordersContainer.innerHTML =
-                '<div class="no-data">No pending orders available.</div>';
+                '<div class="no-data">No pending orders available (excluding Completed and Working status).</div>';
               fetchAssignedOrders(supplier, orders);
               fetchAcceptedOrders(supplier, approvedOrders);
               fetchRejectedOrders(supplier, approvedOrders);
@@ -1053,60 +1060,92 @@
             const table = document.createElement("table");
             table.className = "table";
             table.innerHTML = `
-                      <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Customer</th>
-                            <th>Part</th>
-                            <th>Category</th>
-                            <th>Status</th>
-                            <th>Description</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                            <th>Approval Status</th>
-                            <th>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody id="ordersTableBody">
-                      </tbody>
-                  `;
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Part</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Description</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Approval Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                </tbody>
+            `;
 
             const tbody = document.createElement("tbody");
             pendingOrders.forEach((order) => {
               const row = document.createElement("tr");
+
+              // Create all cells except the action buttons
               row.innerHTML = `
-                          <td>${order.order_id}</td>
-                          <td>${order.cname} (${order.email})</td>
-                          <td>${order.Part_Name}</td>
-                          <td>${order.category}</td>
-                          <td><span class="badge ${
-                            order.working_status === "Completed"
-                              ? "badge-success"
-                              : order.working_status === "Working"
-                              ? "badge-primary"
-                              : "badge-warning"
-                          }">${order.working_status}</span></td>
-                          <td>${order.desc}</td>
-                          <td>${order.tv}</td>
-                          <td>${order.pr}</td>
-                          <td><span class="badge ${
-                            order.isApproved === "Approved"
-                              ? "badge-success"
-                              : "badge-danger"
-                          }">${order.isApproved}</span></td>
-                          <td>
-                              <button class="btn btn-success" onclick="updateOrderStatus('${
-                                order.order_id
-                              }', '${
-                supplier.supplierId
-              }', 'Accepted')">Accept</button>
-                              <button class="btn btn-danger" onclick="updateOrderStatus('${
-                                order.order_id
-                              }', '${
-                supplier.supplierId
-              }', 'Rejected')">Reject</button>
-                          </td>
-                      `;
+                  <td>${order.order_id}</td>
+                  <td>${order.cname} (${order.email})</td>
+                  <td>${order.Part_Name}</td>
+                  <td>${order.category}</td>
+                  <td><span class="badge ${
+                    order.working_status === "Completed"
+                      ? "badge-success"
+                      : order.working_status === "Working"
+                      ? "badge-primary"
+                      : "badge-warning"
+                  }">${order.working_status}</span></td>
+                  <td>${order.desc}</td>
+                  <td>${order.tv}</td>
+                  <td>${order.pr}</td>
+                  <td><span class="badge ${
+                    order.isApproved === "Approved"
+                      ? "badge-success"
+                      : "badge-danger"
+                  }">${order.isApproved}</span></td>
+                  <td></td> <!-- Empty cell for buttons -->
+              `;
+
+              // Create action buttons
+              const actionCell = row.cells[row.cells.length - 1];
+
+              // Accept button
+              const acceptBtn = document.createElement("button");
+              acceptBtn.className = "btn btn-success btn-sm";
+              acceptBtn.textContent = "Accept";
+              acceptBtn.onclick = () =>
+                updateOrderStatus(
+                  order.order_id,
+                  supplier.supplierId,
+                  "Accepted"
+                );
+              actionCell.appendChild(acceptBtn);
+
+              // Space between buttons
+              actionCell.appendChild(document.createTextNode(" "));
+
+              // Reject button
+              const rejectBtn = document.createElement("button");
+              rejectBtn.className = "btn btn-danger btn-sm";
+              rejectBtn.textContent = "Reject";
+              rejectBtn.onclick = () =>
+                updateOrderStatus(
+                  order.order_id,
+                  supplier.supplierId,
+                  "Rejected"
+                );
+              actionCell.appendChild(rejectBtn);
+
+              // Space between buttons
+              actionCell.appendChild(document.createTextNode(" "));
+
+              // View button
+              const viewBtn = document.createElement("button");
+              viewBtn.className = "btn btn-info btn-sm";
+              viewBtn.textContent = "View";
+              viewBtn.onclick = () => showFullOrderDetails(order);
+              actionCell.appendChild(viewBtn);
+
               tbody.appendChild(row);
             });
 
@@ -1115,9 +1154,7 @@
             fetchAssignedOrders(supplier, orders);
             fetchAcceptedOrders(supplier, approvedOrders);
             fetchRejectedOrders(supplier, approvedOrders);
-            // Inside your fetchOrders function, after processing orders:
             displayOrderStats(orders, supplier);
-            // Call the new function to fetch customers working with this supplier
             fetchCustomersWorkingWithSupplier(supplier);
           })
           .catch((error) => {
@@ -1126,6 +1163,155 @@
               '<div class="no-data">Failed to fetch orders. Please try again later.</div>';
           });
       }
+
+      // Add this new function to show full order details
+      window.showFullOrderDetails = function (order) {
+        // Format dates for display
+        const formatDate = (dateString) => {
+          if (!dateString) return "Not specified";
+          try {
+            const date = new Date(dateString);
+            return isNaN(date.getTime())
+              ? dateString
+              : date.toLocaleDateString();
+          } catch (e) {
+            return dateString;
+          }
+        };
+
+        // Create modal content with all order details
+        const modalContent = `
+          <div class="order-details">
+              <div class="detail-group">
+                  <h4>Order Information</h4>
+                  <p><strong>Order ID:</strong> ${order.order_id || "N/A"}</p>
+                  <p><strong>Status:</strong> <span class="badge ${
+                    order.working_status === "Completed"
+                      ? "badge-success"
+                      : order.working_status === "Working"
+                      ? "badge-primary"
+                      : "badge-warning"
+                  }">${order.working_status || "N/A"}</span></p>
+                  <p><strong>Approval Status:</strong> <span class="badge ${
+                    order.isApproved === "Approved"
+                      ? "badge-success"
+                      : "badge-danger"
+                  }">${order.isApproved || "N/A"}</span></p>
+                  <p><strong>Created At:</strong> ${formatDate(
+                    order.createdAt
+                  )}</p>
+              </div>
+              
+              <div class="detail-group">
+                  <h4>Part Details</h4>
+                  <p><strong>Part Name:</strong> ${order.Part_Name || "N/A"}</p>
+                  <p><strong>Blank Name:</strong> ${
+                    order.blank_name || "N/A"
+                  }</p>
+                  <p><strong>Category:</strong> ${order.category || "N/A"}</p>
+                  <p><strong>Description:</strong> ${order.desc || "N/A"}</p>
+                  <p><strong>Quantity:</strong> ${order.tv || "N/A"}</p>
+                  <p><strong>Price:</strong> ${order.pr || "N/A"}</p>
+                  <p><strong>Available Volume:</strong> ${order.av || "N/A"}</p>
+              </div>
+              
+              <div class="detail-group">
+                  <h4>Customer Information</h4>
+                  <p><strong>Name:</strong> ${order.cname || "N/A"}</p>
+                  <p><strong>Email:</strong> ${order.email || "N/A"}</p>
+                  <p><strong>Phone:</strong> ${order.phone_number || "N/A"}</p>
+                  <p><strong>Customer Part No.:</strong> ${
+                    order.cpno || "N/A"
+                  }</p>
+                  <p><strong>Location:</strong> ${order.location || "N/A"}</p>
+              </div>
+              
+              <div class="detail-group">
+                  <h4>Timeline</h4>
+                  <p><strong>Quote Submission Date:</strong> ${formatDate(
+                    order.qs
+                  )}</p>
+                  <p><strong>Start of Production:</strong> ${formatDate(
+                    order.sop
+                  )}</p>
+              </div>
+              
+              ${
+                order.pdf_file
+                  ? `
+              <div class="detail-group">
+                  <h4>Attachments</h4>
+                  <a href="${order.pdf_file}" target="_blank" class="btn btn-primary">
+                      <i class="fas fa-file-pdf"></i> View PDF
+                  </a>
+              </div>
+              `
+                  : ""
+              }
+              
+              <div class="detail-group">
+                  <h4>Supplier Responses</h4>
+                  ${
+                    order.supplierResponses &&
+                    order.supplierResponses.length > 0
+                      ? `<table class="table table-sm">
+                          <thead>
+                              <tr>
+                                  <th>Supplier ID</th>
+                                  <th>Status</th>
+                                  <th>Date</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              ${order.supplierResponses
+                                .map(
+                                  (response) => `
+                                  <tr>
+                                      <td>${response.supplier_Id || "N/A"}</td>
+                                      <td><span class="badge ${
+                                        response.status === "Accepted"
+                                          ? "badge-success"
+                                          : response.status === "Rejected"
+                                          ? "badge-danger"
+                                          : "badge-warning"
+                                      }">${response.status || "N/A"}</span></td>
+                                      <td>${formatDate(response.date)}</td>
+                                  </tr>
+                              `
+                                )
+                                .join("")}
+                          </tbody>
+                      </table>`
+                      : "<p>No supplier responses yet</p>"
+                  }
+              </div>
+              
+              ${
+                order.acceptedSupplier
+                  ? `<div class="detail-group">
+                      <h4>Assigned Supplier</h4>
+                      <p><strong>Supplier ID:</strong> ${
+                        order.acceptedSupplier.supplier_Id || "N/A"
+                      }</p>
+                      <p><strong>Assigned At:</strong> ${formatDate(
+                        order.acceptedSupplier.acceptedAt
+                      )}</p>
+                  </div>`
+                  : ""
+              }
+          </div>
+        `;
+
+        // Set modal content and show
+        document.getElementById("orderModalBody").innerHTML = modalContent;
+        document.getElementById("orderModal").style.display = "flex";
+        document.body.style.overflow = "hidden";
+
+        // Update modal title
+        document.querySelector(
+          "#orderModal .modal-header h3"
+        ).textContent = `Order #${order.order_id} Details`;
+      };
 
       async function fetchCustomersWorkingWithSupplier(supplier) {
         try {
