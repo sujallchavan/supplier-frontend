@@ -858,7 +858,7 @@
 
       function fetchOrders(supplier) {
         fetch(
-          `https://backend-api-3qcm.onrender.com/api/suppliers/orders?category=${supplier.category}`
+          `https://backend-api-y55a.onrender.com/api/suppliers/orders?category=${supplier.category}`
         )
           .then((response) => response.json())
           .then((orders) => {
@@ -1747,7 +1747,7 @@
 
         try {
           const response = await fetch(
-            "https://backend-api-3qcm.onrender.com/api/suppliers/orders/respond",
+            "https://backend-api-y55a.onrender.com/api/suppliers/orders/respond",
             {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
